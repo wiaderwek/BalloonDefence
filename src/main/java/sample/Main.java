@@ -1,37 +1,32 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
-import javafx.scene.layout.Background;
-import javafx.scene.layout.BackgroundImage;
-import javafx.scene.layout.GridPane;
+import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
 import javafx.stage.StageStyle;
 
 public class Main extends Application {
 
     @Override
-    public void start(Stage primaryStage) throws Exception{
+    public void start(Stage primaryStage){
 
         Scene scene = new Scene(CreateMainWindow(), 626, 626);        //creating a scene
-        primaryStage.setTitle("Hello World");                       //setting title of the scene
-        primaryStage.setScene(scene);                               //creating stage with our scene
-        primaryStage.setResizable(false);                           //prevent from window resizing
-        primaryStage.initStyle(StageStyle.UNDECORATED);             //setting stage with no decorations
-        primaryStage.show();                                        //showing the stage
+        primaryStage.setTitle("Hello World");                                     //setting title of the scene
+        primaryStage.setScene(scene);                                             //creating stage with our scene
+        primaryStage.setResizable(false);                                         //prevent from window resizing
+        primaryStage.initStyle(StageStyle.UNDECORATED);                           //setting stage with no decorations
+        primaryStage.show();                                                      //showing the stage
     }
 
-    public Parent CreateMainWindow(){   //creating GridPane with main buttons
+    private Parent CreateMainWindow(){   //creating GridPane with main buttons
         Button PlayBtn = new Button("Play");            //creating "Play" button
         Button OptionBtn = new Button("Options");
         Button QuitBtn = new Button("Quit");
@@ -48,46 +43,44 @@ public class Main extends Application {
         QuitBtn.setStyle("-fx-background-color: transparent");
         QuitBtn.setTextFill(Color.LIMEGREEN);
 
-        Image img = new Image(getClass().getClassLoader().getResource("MainWindowBackground.jpg").toString()); // creating image with MainWindowBackground.jpg
-        ImageView iv = new ImageView(img);
-        BackgroundImage bcg = new BackgroundImage(img, null, null, null, null);
-        Background back = new Background(bcg);
+        Background back;
+        try {        //try to load background image
+            Image img = new Image(getClass().getClassLoader().getResource("MainWindowBackground.jpg").toString()); // creating image with MainWindowBackground.jpg
+            BackgroundImage bcg = new BackgroundImage(img, null, null, null, null);
+            back = new Background(bcg);
+        }
+        catch (NullPointerException exception){         //if loafing background image failed then set white background
+            back = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(2), new Insets(2))); //creating white plain background
+        }
 
-        PlayBtn.setOnAction(new EventHandler<ActionEvent>() {
-            @Override
-            public void handle(ActionEvent event) {
-                /*
-                GameScene gs = new GameScene();
-                Scene scene = new Scene(gs.CreateGameScene());
-                Stage stage = new Stage();
-                stage.setTitle("ExampleGameScene");
-                stage.setScene(scene);
-                stage.show();
-                */
-            }
+        PlayBtn.setOnAction(event -> {
+            /*
+            GameScene gs = new GameScene();
+            Scene scene = new Scene(gs.CreateGameScene());
+            Stage stage = new Stage();
+            stage.setTitle("ExampleGameScene");
+            stage.setScene(scene);
+            stage.show();
+            */
         });
 
-        OptionBtn.setOnAction(new EventHandler<ActionEvent>() {         //Option button cause opening options window
-            @Override
-            public void handle(ActionEvent event) {
+        //Option button cause opening options window
+        OptionBtn.setOnAction(event -> {
 
-                Options op = new Options();
-                Scene scene = new Scene(op.CreateOptionsWindow(), 700, 700);    //creating options scene
-                Stage stage = new Stage();                                                  //creating new stage
-                stage.setTitle("Options");                                                  //setting the title of the stage
-                stage.setScene(scene);                                                      //adding the scene to the stage
-                stage.setResizable(false);                                                  //prevent from window resizing
-                stage.show();
+            Options op = new Options();
+            Scene scene = new Scene(op.CreateOptionsWindow(), 700, 700);    //creating options scene
+            Stage stage = new Stage();                                                  //creating new stage
+            stage.setTitle("Options");                                                  //setting the title of the stage
+            stage.setScene(scene);                                                      //adding the scene to the stage
+            stage.setResizable(false);                                                  //prevent from window resizing
+            stage.show();
 
-            }
         });
 
-        QuitBtn.setOnAction(new EventHandler<ActionEvent>() {         // Quit button cause closing the window
-            @Override
-            public void handle(ActionEvent event) {
-                Stage stage = (Stage) QuitBtn.getScene().getWindow(); // getting the actual stage
-                stage.close();                                        //closing window
-            }
+        // Quit button cause closing the window
+        QuitBtn.setOnAction(event -> {
+            Stage stage = (Stage) QuitBtn.getScene().getWindow(); // getting the actual stage
+            stage.close();                                        //closing window
         });
 
 
