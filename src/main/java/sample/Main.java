@@ -6,6 +6,8 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
+import javafx.scene.media.Media;
+import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -13,8 +15,12 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.stage.StageStyle;
 
-public class Main extends Application {
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.net.URISyntaxException;
 
+public class Main extends Application {
+    SoundtrackPlayer SoundtrackPlayer;
     @Override
     public void start(Stage primaryStage){
 
@@ -24,6 +30,9 @@ public class Main extends Application {
         primaryStage.setResizable(false);                                         //prevent from window resizing
         primaryStage.initStyle(StageStyle.UNDECORATED);                           //setting stage with no decorations
         primaryStage.show();                                                      //showing the stage
+
+        SoundtrackPlayer = new SoundtrackPlayer();
+        SoundtrackPlayer.OnOffVolume(true);
     }
 
     private Parent CreateMainWindow(){   //creating GridPane with main buttons
@@ -67,7 +76,7 @@ public class Main extends Application {
         //Option button cause opening options window
         OptionBtn.setOnAction(event -> {
 
-            Options op = new Options();
+            Options op = new Options(SoundtrackPlayer);
             Scene scene = new Scene(op.CreateOptionsWindow(), 700, 700);    //creating options scene
             Stage stage = new Stage();                                                  //creating new stage
             stage.setTitle("Options");                                                  //setting the title of the stage
@@ -96,6 +105,7 @@ public class Main extends Application {
 
         return root;                 //returning our GridPane
     }
+
 
     public static void main(String[] args) {
         launch(args);

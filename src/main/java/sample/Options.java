@@ -1,7 +1,6 @@
 package sample;
 
 import javafx.application.Application;
-import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.geometry.Insets;
 import javafx.scene.Parent;
@@ -16,17 +15,28 @@ import javafx.scene.image.Image;
 import javafx.stage.StageStyle;
 
 import java.io.*;
-import java.util.Scanner;
 
 
 public class Options extends Application {
 
     private GridPane root = new GridPane();                                   //creating GridPane
-    int Volume;
+    SoundtrackPlayer SoundPlayer;
+    boolean Volume;
+    boolean PrevVolume;
     int Difficulty;
+    int PrevDifficulty;
 
 
-
+    Options(SoundtrackPlayer player){
+        SoundPlayer=player;
+        if(player.player.getVolume()==1){
+         PrevVolume=true;
+        }else{
+            PrevVolume=false;
+        }
+        Volume=PrevVolume;
+        Difficulty=PrevDifficulty;
+    }
     public Parent CreateOptionsWindow() {
 
         Button ApplyBtn = new Button("Apply");          //creating Aplly button
@@ -52,11 +62,27 @@ public class Options extends Application {
 
         //Apply button cause apllying options
         ApplyBtn.setOnAction(event -> {
+            //after apply button we save new values of volume and difficulty
+            PrevVolume=Volume;
+            PrevDifficulty = Difficulty;
 
+            //saving new StandardMode level
+            try{
+                PrintWriter SaveDifficulty = new PrintWriter(new FileWriter("target\\classes\\StandardModeLevel.txt"));
+                SaveDifficulty.format("%d", PrevDifficulty);
+                SaveDifficulty.close();
+            }
+            catch(FileNotFoundException e){
+                System.out.println("coś nie tak");
+            }
+            catch (IOException e){
+                System.out.println("Coś nie tego");
+            }
         });
 
         // Quit button cause closing the window
         BackBtn.setOnAction(event -> {
+            SoundPlayer.OnOffVolume(PrevVolume);                  //setting the PrevVolume value to the player
             Stage stage = (Stage) BackBtn.getScene().getWindow(); // getting the actual stage
             stage.close();                                        //closing window
         });
@@ -133,35 +159,59 @@ public class Options extends Application {
 
 
     private void OnOffSound(){
-        Slider VolumeLevel = new Slider();                                                                 //creating slider to chagne volume's value
-        VolumeLevel.setMin(0);                                                                             //setting the minimum level of the slider
-        VolumeLevel.setMax(100);                                                                           //setting the maximum level of the slider
-        VolumeLevel.setValue(50);                                                                          //setting the strating value of the slider
 
-        Label VolumeLabel = new Label("Volume: ");
-        Label VolumeValue = new Label(String.valueOf((int)VolumeLevel.getValue()));                        //creating label with the value of the slider
+        Label VolumeLabel = new Label("Sound: ");
 
         VolumeLabel.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 48));     //setting font, color, size and other features of the label
         VolumeLabel.setStyle("-fx-background-color: transparent");
         VolumeLabel.setTextFill(Color.ROYALBLUE);
 
-        VolumeValue.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 30));      //setting font, color, size and other features of the label
-        VolumeValue.setStyle("-fx-background-color: transparent");
-        VolumeValue.setTextFill(Color.ROYALBLUE);
+        //creating checkbx to turn on or off the sounf
+        CheckBox VolumeOnOff[] = new CheckBox[2];
+        VolumeOnOff[0] = new CheckBox("ON");
+        VolumeOnOff[1] = new CheckBox("OFF");
+
+        //setting the right checkbox selectef
+        if(PrevVolume==true) {
+            VolumeOnOff[0].setSelected(true);
+            VolumeOnOff[1].setSelected(false);
+        }else {
+            VolumeOnOff[1].setSelected(true);
+            VolumeOnOff[0].setSelected(false);
+        }
+        //setting font, color, size and other features of the chechbox
+        for(int i=0; i<2; i++){
+            VolumeOnOff[i].fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
+            VolumeOnOff[i].setStyle("-fx-background-color: transparent");
+        }
+
+        VolumeOnOff[0].setTextFill(Color.CORAL);
+        VolumeOnOff[1].setTextFill(Color.LIMEGREEN);
+
+        for(int i=0; i<2; i++) {
+            int finalI = i;
+            VolumeOnOff[i].selectedProperty().addListener((ObservableValue<? extends Boolean> ov, Boolean old_val, Boolean new_val) -> {
+                if (new_val) {
+                    VolumeOnOff[(finalI + 1) % 2].setSelected(!new_val);
+                    VolumeOnOff[finalI].setSelected(new_val);
+                    if(finalI==0){
+                        Volume=true;
+                    }
+                    else{
+                        Volume=false;
+                    }
+                    SoundPlayer.OnOffVolume(Volume);
+                }
+            });
+        }
+
+        HBox OnOff = new HBox();
+        OnOff.getChildren().addAll(VolumeOnOff);
+        root.add(VolumeLabel,1,15);
+        root.add(OnOff, 3,15,5,1);
 
 
-        root.add(VolumeLabel,1,10);                                                     //adding VolumeLabel label to the GridPane
-        root.add(VolumeLevel, 3,10);                                                    //adding slider to the GridPane
-        root.add(VolumeValue, 10,10);                                                   //adding label with volume's value to the GridPane
 
-        //updating VolumeValue label and Volume when value on the slider changed
-        VolumeLevel.valueChangingProperty().addListener(new ChangeListener<Boolean>() {
-            @Override
-            public void changed(ObservableValue<? extends Boolean> observable, Boolean oldValue, Boolean newValue) {
-                VolumeValue.textProperty().setValue(String.valueOf((int)VolumeLevel.getValue()));
-                Volume = (int)VolumeLevel.getValue();
-
-            }});
 
     }
 
@@ -174,12 +224,12 @@ public class Options extends Application {
         try {
             BufferedReader BufferReader =  new BufferedReader(new FileReader(new File("target\\classes\\StandardModeLevel.txt"))); //loadin file with saved difficulty level
             int DifficultyLevel = Integer.parseInt(BufferReader.readLine());            //loading difficulty level
-            Difficulty = DifficultyLevel;
+            PrevDifficulty = DifficultyLevel;
 
         } catch (FileNotFoundException e) {
-            Difficulty = 1;
+            PrevDifficulty = 1;
         } catch (IOException e) {
-            Difficulty = 1;
+            PrevDifficulty = 1;
         }
 
         CheckBox DifficultyLevels[] = new CheckBox[3];
@@ -187,7 +237,7 @@ public class Options extends Application {
         DifficultyLevels[1] = new CheckBox("NORMAL");
         DifficultyLevels[2] = new CheckBox("HARD");
 
-        DifficultyLevels[Difficulty].setSelected(true);
+        DifficultyLevels[PrevDifficulty].setSelected(true);
 
         //setting font, color, size and other features of the chechbox
         for(int i=0; i<3; i++){
