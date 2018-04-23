@@ -6,8 +6,6 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.layout.*;
-import javafx.scene.media.Media;
-import javafx.scene.media.MediaPlayer;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
@@ -15,24 +13,22 @@ import javafx.stage.Stage;
 import javafx.scene.image.Image;
 import javafx.stage.StageStyle;
 
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URISyntaxException;
 
 public class Main extends Application {
     SoundtrackPlayer SoundtrackPlayer;
+    GridPane root = new GridPane();
     @Override
     public void start(Stage primaryStage){
 
         Scene scene = new Scene(CreateMainWindow(), 626, 626);        //creating a scene
-        primaryStage.setTitle("Hello World");                                     //setting title of the scene
+        primaryStage.setTitle("MainWindow");                                     //setting title of the scene
         primaryStage.setScene(scene);                                             //creating stage with our scene
         primaryStage.setResizable(false);                                         //prevent from window resizing
         primaryStage.initStyle(StageStyle.UNDECORATED);                           //setting stage with no decorations
         primaryStage.show();                                                      //showing the stage
 
-        SoundtrackPlayer = new SoundtrackPlayer();
-        SoundtrackPlayer.OnOffVolume(true);
+        SoundtrackPlayer = new SoundtrackPlayer();                                //creating new object of the SoundtrackPlayer to play the music
+        SoundtrackPlayer.OnOffVolume(true);                                       //turning on the music
     }
 
     private Parent CreateMainWindow(){   //creating GridPane with main buttons
@@ -52,25 +48,16 @@ public class Main extends Application {
         QuitBtn.setStyle("-fx-background-color: transparent");
         QuitBtn.setTextFill(Color.LIMEGREEN);
 
-        Background back;
-        try {        //try to load background image
-            Image img = new Image(getClass().getClassLoader().getResource("MainWindowBackground.jpg").toString()); // creating image with MainWindowBackground.jpg
-            BackgroundImage bcg = new BackgroundImage(img, null, null, null, null);
-            back = new Background(bcg);
-        }
-        catch (NullPointerException exception){         //if loafing background image failed then set white background
-            back = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(2), new Insets(2))); //creating white plain background
-        }
 
         PlayBtn.setOnAction(event -> {
-            /*
-            GameScene gs = new GameScene();
-            Scene scene = new Scene(gs.CreateGameScene());
+
+            ClassicOrBalloonRush ChoiceWindow = new ClassicOrBalloonRush();
+            Scene scene = new Scene(ChoiceWindow.CreateChoiceWindow());
             Stage stage = new Stage();
             stage.setTitle("ExampleGameScene");
             stage.setScene(scene);
             stage.show();
-            */
+
         });
 
         //Option button cause opening options window
@@ -93,8 +80,7 @@ public class Main extends Application {
         });
 
 
-        GridPane root = new GridPane();
-        root.setBackground(back);                           //adding background image
+        SetBackground();
         root.setHgap(1);                                    //setting in width of the horizontal gaps between columns in GridPane
         root.setVgap(1);                                    //setting in height of the vertical gaps between rows in GridPane
         root.setPadding(new Insets(15, 25, 15, 25)); //setting margins around the whole grid
@@ -104,6 +90,20 @@ public class Main extends Application {
         root.add(QuitBtn,200,301);                      //adding Quit button
 
         return root;                 //returning our GridPane
+    }
+
+    private void SetBackground(){
+        Background back;
+        try {        //try to load background image
+            Image img = new Image(getClass().getClassLoader().getResource("MainWindowBackground.jpg").toString()); // creating image with MainWindowBackground.jpg
+            BackgroundImage bcg = new BackgroundImage(img, null, null, null, null);
+            back = new Background(bcg);
+        }
+        catch (NullPointerException exception){         //if loafing background image failed then set white background
+            back = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(2), new Insets(2))); //creating white plain background
+        }
+
+        root.setBackground(back);                           //adding background image
     }
 
 

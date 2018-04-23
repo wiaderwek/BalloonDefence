@@ -20,20 +20,16 @@ import java.io.*;
 public class Options extends Application {
 
     private GridPane root = new GridPane();                                   //creating GridPane
-    SoundtrackPlayer SoundPlayer;
-    boolean Volume;
-    boolean PrevVolume;
-    int Difficulty;
-    int PrevDifficulty;
+    private SoundtrackPlayer SoundPlayer;
+    private boolean Volume;
+    private boolean PrevVolume;
+    private int Difficulty;
+    private int PrevDifficulty;
 
-
+    //copying SoinfTrackPlayer created in Main and initialize variables
     Options(SoundtrackPlayer player){
         SoundPlayer=player;
-        if(player.player.getVolume()==1){
-         PrevVolume=true;
-        }else{
-            PrevVolume=false;
-        }
+        PrevVolume = SoundtrackPlayer.player.getVolume() == 1;
         Volume=PrevVolume;
         Difficulty=PrevDifficulty;
     }
@@ -172,7 +168,7 @@ public class Options extends Application {
         VolumeOnOff[1] = new CheckBox("OFF");
 
         //setting the right checkbox selectef
-        if(PrevVolume==true) {
+        if(PrevVolume) {
             VolumeOnOff[0].setSelected(true);
             VolumeOnOff[1].setSelected(false);
         }else {
@@ -194,12 +190,7 @@ public class Options extends Application {
                 if (new_val) {
                     VolumeOnOff[(finalI + 1) % 2].setSelected(!new_val);
                     VolumeOnOff[finalI].setSelected(new_val);
-                    if(finalI==0){
-                        Volume=true;
-                    }
-                    else{
-                        Volume=false;
-                    }
+                    Volume = finalI == 0;
                     SoundPlayer.OnOffVolume(Volume);
                 }
             });
