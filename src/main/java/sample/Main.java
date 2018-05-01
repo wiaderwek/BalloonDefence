@@ -52,11 +52,15 @@ public class Main extends Application {
         PlayBtn.setOnAction(event -> {
 
             ClassicOrBalloonRush ChoiceWindow = new ClassicOrBalloonRush();
+            Stage stage = new Stage();
+            ChoiceWindow.start(stage);
+            /*
             Scene scene = new Scene(ChoiceWindow.CreateChoiceWindow());
             Stage stage = new Stage();
             stage.setTitle("ExampleGameScene");
             stage.setScene(scene);
             stage.show();
+            */
 
         });
 
@@ -64,13 +68,8 @@ public class Main extends Application {
         OptionBtn.setOnAction(event -> {
 
             Options op = new Options(SoundtrackPlayer);
-            Scene scene = new Scene(op.CreateOptionsWindow(), 700, 700);    //creating options scene
             Stage stage = new Stage();                                                  //creating new stage
-            stage.setTitle("Options");                                                  //setting the title of the stage
-            stage.setScene(scene);                                                      //adding the scene to the stage
-            stage.setResizable(false);                                                  //prevent from window resizing
-            stage.show();
-
+            op.start(stage);
         });
 
         // Quit button cause closing the window

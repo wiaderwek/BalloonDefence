@@ -13,6 +13,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sample.Model.MapBuilder;
 
 public class ClassicOrBalloonRush extends Application {
     private GridPane root = new GridPane();
@@ -36,7 +37,10 @@ public class ClassicOrBalloonRush extends Application {
         BalloonRush.setTextFill(Color.LIMEGREEN);
 
         Classic.setOnAction(event -> {
-
+            Stage stage = (Stage) Classic.getScene().getWindow(); // getting the actual stage
+            stage.close();                                        //closing window
+            MapBuilder Map = new MapBuilder();
+            Map.start(stage);
 
         });
 
@@ -52,21 +56,21 @@ public class ClassicOrBalloonRush extends Application {
         root.setVgap(1);                                                  //setting in height of the vertical gaps between rows in GridPane
         root.setPadding(new Insets(15, 25, 15, 25));  //setting margins around the whole grid
 
-        root.add(Choice,20,1);                              //adding Play button
-        root.add(Classic,1,100);                           //adding Option button
-        root.add(BalloonRush,40,100);                      //adding Quit button
+        root.add(Choice,8,1,100,1);                              //adding Play button
+        root.add(Classic,1,100,10,1);                           //adding Option button
+        root.add(BalloonRush,1,200,10,1);                      //adding Quit button
 
         return root;
 
     }
 
     @Override
-    public void start(Stage primaryStage) throws Exception {
-        Scene scene = new Scene(CreateChoiceWindow(), 100, 100);        //creating a scene
+    public void start(Stage primaryStage) {
+        Scene scene = new Scene(CreateChoiceWindow(), 741, 500);        //creating a scene
         primaryStage.setTitle("ChoiceWidnow");                                     //setting title of the scene
         primaryStage.setScene(scene);                                             //creating stage with our scene
         primaryStage.setResizable(false);                                         //prevent from window resizing
-        primaryStage.initStyle(StageStyle.UNDECORATED);                           //setting stage with no decorations
+        //primaryStage.initStyle(StageStyle.UNDECORATED);                           //setting stage with no decorations
         primaryStage.show();                                                      //showing the stage
     }
 
