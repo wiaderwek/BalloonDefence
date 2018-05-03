@@ -12,10 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import javafx.stage.StageStyle;
-import sample.Controler.MapControler;
-import sample.Model.Map;
-import sample.Model.MapBuilder;
+import sample.View.View;
 
 import java.io.File;
 
@@ -43,9 +40,8 @@ public class ClassicOrBalloonRush extends Application {
         Classic.setOnAction(event -> {
             Stage stage = (Stage) Classic.getScene().getWindow(); // getting the actual stage
             stage.close();                                        //closing window
-            MapControler Map = new MapControler(new File("target\\classes\\FirsLevel.txt"), "tomisnho", 1);
-            MapBuilder Mapbuilder = new MapBuilder();
-            Mapbuilder.start(stage,Map.CreateGameMap());
+            View view = new View(new File("target\\classes\\FirsLevel.txt"), "tomisnho", 1);
+            view.showGameScene();
 
         });
 

@@ -12,12 +12,12 @@ import javafx.scene.paint.Color;
 import java.io.*;
 
 public class Map extends StackPane{
-    private Tile [][] Tilemap = new Tile[10][10];
-    private char[][] map = new char[10][10];
+    private static Tile [][] Tilemap = new Tile[10][10];
+    private static char[][] map = new char[10][10];
     private static final int MAP_SIZE = 10;
 
 
-    public Map(File Mapdescriptor){
+    public void setMap(File Mapdescriptor){
         try {
             BufferedReader BufferReader =  new BufferedReader(new FileReader(Mapdescriptor));                 //loadin file with amp descriptor
 

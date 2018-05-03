@@ -7,14 +7,16 @@ import javafx.scene.shape.Rectangle;
 
 public class Tower extends Rectangle{
     private static final double TOWER_SIZE = 64;            //tile's with tower size (height and width)
-    public int xPosition;                                   //number of column of the tile with Tower
-    public int yPosition;                                   //number of row of the tile with Tower
+    private int xPosition;                                   //number of column of the tile with Tower
+    private int yPosition;                                   //number of row of the tile with Tower
     private TowerType TypeOfTower;                          //Type of the Tower
     private int cost;                                       //cost of the tower
     private int damage;                                     //single hit damage
     private double speed;                                   //number of hits per second
 
     private static final int PRIMARY_COST = 10;
+    private static final int PRIMARY_DAMAGE = 10;
+    private static final int PRIMARY_SPEED = 2;
 
 
     public enum TowerType{
@@ -29,38 +31,31 @@ public class Tower extends Rectangle{
 
         TypeOfTower = type;
 
-        //setting the filling of the tower tile depends on TowerType
-        if(type == TowerType.FIRST)
-        {
-            try {
-                setFill(new ImagePattern(new Image(getClass().getClassLoader().getResource("FirstTypeTower.jpg").toString())));
-            }
-            catch (NullPointerException e){
-                setFill(Color.GREY);
-            }
-            cost=PRIMARY_COST;
-        }
-        else if(type == TowerType.SECOND){
-            try {
-                setFill(new ImagePattern(new Image(getClass().getClassLoader().getResource("SecondTypeTower.jpg").toString())));
-            }
-            catch (NullPointerException e){
-                setFill(Color.GREEN);
-            }
-            cost=2*PRIMARY_COST;
-        }
-        else{
-            try {
-                setFill(new ImagePattern(new Image(getClass().getClassLoader().getResource("ThirdTypeTower.jpg").toString())));
-            }
-            catch (NullPointerException e){
-                setFill(Color.RED);
-            }
-            cost=3*PRIMARY_COST;
-        }
+        setProperties(type);
+
 
         xPosition = column;
         yPosition = row;
+    }
+
+    //setting properies of the tower
+    private void setProperties(TowerType type){
+        if(type == TowerType.FIRST) {
+            cost=PRIMARY_COST;
+            damage = PRIMARY_DAMAGE;
+            speed = PRIMARY_SPEED;
+        }
+        else if(type == TowerType.SECOND){
+            cost=2*PRIMARY_COST;
+            damage = 2*PRIMARY_DAMAGE;
+            speed = 1.5 *PRIMARY_SPEED;
+        }
+        else{
+            cost=3*PRIMARY_COST;
+            damage = (int) (2.5 * PRIMARY_DAMAGE);
+            speed = 2 * PRIMARY_SPEED;
+        }
+
     }
 
     public void set(int x, int y){
@@ -75,4 +70,13 @@ public class Tower extends Rectangle{
     public int getCost() {
         return cost;
     }
+
+    public int getDamage(){
+        return damage;
+    }
+
+    public double getSpeed(){
+        return speed;
+    }
+
 }
