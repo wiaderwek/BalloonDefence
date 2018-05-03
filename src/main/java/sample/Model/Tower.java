@@ -14,6 +14,8 @@ public class Tower extends Rectangle{
     private int damage;                                     //single hit damage
     private double speed;                                   //number of hits per second
 
+    private static final int PRIMARY_COST = 10;
+
 
     public enum TowerType{
         FIRST, SECOND, THIRD
@@ -36,6 +38,7 @@ public class Tower extends Rectangle{
             catch (NullPointerException e){
                 setFill(Color.GREY);
             }
+            cost=PRIMARY_COST;
         }
         else if(type == TowerType.SECOND){
             try {
@@ -44,6 +47,7 @@ public class Tower extends Rectangle{
             catch (NullPointerException e){
                 setFill(Color.GREEN);
             }
+            cost=2*PRIMARY_COST;
         }
         else{
             try {
@@ -52,13 +56,23 @@ public class Tower extends Rectangle{
             catch (NullPointerException e){
                 setFill(Color.RED);
             }
+            cost=3*PRIMARY_COST;
         }
 
         xPosition = column;
         yPosition = row;
     }
 
+    public void set(int x, int y){
+        xPosition = x;
+        yPosition = y;
+    }
+
     public TowerType getTypeOfTower() {
         return TypeOfTower;
+    }
+
+    public int getCost() {
+        return cost;
     }
 }

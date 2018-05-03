@@ -13,7 +13,11 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sample.Controler.MapControler;
+import sample.Model.Map;
 import sample.Model.MapBuilder;
+
+import java.io.File;
 
 public class ClassicOrBalloonRush extends Application {
     private GridPane root = new GridPane();
@@ -39,8 +43,9 @@ public class ClassicOrBalloonRush extends Application {
         Classic.setOnAction(event -> {
             Stage stage = (Stage) Classic.getScene().getWindow(); // getting the actual stage
             stage.close();                                        //closing window
-            MapBuilder Map = new MapBuilder();
-            Map.start(stage);
+            MapControler Map = new MapControler(new File("target\\classes\\FirsLevel.txt"), "tomisnho", 1);
+            MapBuilder Mapbuilder = new MapBuilder();
+            Mapbuilder.start(stage,Map.CreateGameMap());
 
         });
 

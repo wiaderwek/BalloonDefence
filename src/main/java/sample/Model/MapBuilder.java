@@ -89,4 +89,13 @@ public class MapBuilder extends Application{
 
     }
 
+    public void start (Stage PrimaryStage, Parent root){
+
+        Scene scene = new Scene(root);
+        PrimaryStage.setTitle("ExampleGameScene");
+        PrimaryStage.setScene(scene);
+        PrimaryStage.show();
+
+    }
+
 }

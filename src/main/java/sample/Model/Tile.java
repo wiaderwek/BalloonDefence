@@ -30,6 +30,16 @@ public class Tile extends Rectangle{
         TypeOfTile  = type;
 
         //setting filling of the Tile
+        set(type);
+
+        yPosition = row;
+        xPosition = column;
+
+    }
+    public void set(TileType type){
+        TypeOfTile  = type;
+
+        //setting filling of the Tile
         if(type==TileType.SKY || type==TileType.START || type==TileType.END ){                                          //if it is sky tile, sky.jpg is set as a fill
             try {
                 setFill(new ImagePattern(new Image(getClass().getClassLoader().getResource("sky.jpg").toString())));
@@ -46,13 +56,11 @@ public class Tile extends Rectangle{
                 setFill(Color.FLORALWHITE);
             }
         }
-
-        yPosition = row;
-        xPosition = column;
     }
-
 
     public TileType getTypeOfTile() {
         return TypeOfTile;
     }
+
+
 }
