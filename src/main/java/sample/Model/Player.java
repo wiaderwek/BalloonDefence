@@ -4,9 +4,11 @@ public class Player {
     private String Nick;
     private int Gold;
 
-    public void setPlayer(String Name, int DifficultyLevel){
+    private static final int PRIMARY_GOLD = 100;
+
+    public void setPlayer(String Name){
         Nick = Name;
-        Gold = 100*DifficultyLevel;
+        Gold = PRIMARY_GOLD;
     }
 
     public int getGold() {

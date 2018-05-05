@@ -12,6 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import sample.Controler.GameControler;
 import sample.View.View;
 
 import java.io.File;
@@ -38,10 +39,13 @@ public class ClassicOrBalloonRush extends Application {
         BalloonRush.setTextFill(Color.LIMEGREEN);
 
         Classic.setOnAction(event -> {
+
             Stage stage = (Stage) Classic.getScene().getWindow(); // getting the actual stage
             stage.close();                                        //closing window
-            View view = new View(new File("target\\classes\\FirsLevel.txt"), "tomisnho", 1);
-            view.showGameScene();
+
+            GameControler gc = new GameControler();
+            gc.setMap(1, "tomsinho");
+
 
         });
 

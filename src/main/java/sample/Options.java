@@ -20,16 +20,16 @@ import java.io.*;
 public class Options extends Application {
 
     private GridPane root = new GridPane();                                   //creating GridPane
-    private SoundtrackPlayer SoundPlayer;
-    private boolean Volume;
-    private boolean PrevVolume;
-    private int Difficulty;
-    private int PrevDifficulty;
+    private SoundtrackPlayer SoundPlayer;                                     //creating object SoundtrackPlayer to play music
+    private boolean Volume;                                                   //actual volume (on/off)
+    private boolean PrevVolume;                                               //volume after enter the options menu
+    private int Difficulty;                                                   //actual difficulty level
+    private int PrevDifficulty;                                               //difficulty level after enter options menu
 
-    //copying SoinfTrackPlayer created in Main and initialize variables
+    //copying SoundTrackPlayer created in Main and initialize variables
     Options(SoundtrackPlayer player){
         SoundPlayer=player;
-        PrevVolume = SoundtrackPlayer.player.getVolume() == 1;
+        PrevVolume = player.getVolume() == 1;
         Volume=PrevVolume;
         Difficulty=PrevDifficulty;
     }

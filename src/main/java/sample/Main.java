@@ -15,7 +15,7 @@ import javafx.stage.StageStyle;
 
 
 public class Main extends Application {
-    SoundtrackPlayer SoundtrackPlayer;
+    static SoundtrackPlayer SoundtrackPlayer = sample.SoundtrackPlayer.getOurInstance();
     GridPane root = new GridPane();
     @Override
     public void start(Stage primaryStage){
@@ -27,7 +27,7 @@ public class Main extends Application {
         primaryStage.initStyle(StageStyle.UNDECORATED);                           //setting stage with no decorations
         primaryStage.show();                                                      //showing the stage
 
-        SoundtrackPlayer = new SoundtrackPlayer();                                //creating new object of the SoundtrackPlayer to play the music
+        //SoundtrackPlayer = new SoundtrackPlayer();                                //creating new object of the SoundtrackPlayer to play the music
         SoundtrackPlayer.OnOffVolume(true);                                       //turning on the music
     }
 

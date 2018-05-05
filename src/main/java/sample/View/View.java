@@ -17,36 +17,43 @@ import javafx.scene.paint.ImagePattern;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import sample.Controler.MapControler;
-import sample.Model.Map;
-import sample.Model.Player;
-import sample.Model.Tile;
-import sample.Model.Tower;
+import javafx.stage.StageStyle;
+import sample.Model.*;
 
 import java.io.File;
 
-import static javafx.scene.input.KeyCode.V;
+import static sample.Model.Tile.TileType.*;
 
 
 public class View extends Application {
-    private static Stage PrimaryStage;
+    private static Stage PrimaryStage = new Stage();
     private static Scene ActualScene;
     private static double Width;
     private static double Height;
-    private static Map Map;
+    private static Map map;
+    private static Model model;
 
-    Group TileGroup = new Group();
-    Group TowerGroup = new Group();
+    private static Pane GameMap = new Pane();
 
-    //descriptor of Map.map table -- needed to create TileMap
-    private static final char Path = 'p';
-    private static final char Start = 's';
-    private static final char End = 'e';
-    private static final char Cloud = 'c';
+
+    private static Group TileGroup = new Group();
+    private static Group TowerGroup = new Group();
+    private static Group BalloonGroup = new Group();
+
+    private static int NumberOfBalloons = 0;
+
+    private static boolean Shopping = false;
+    private int rowShoping;
+    private int colShoping;
+    private Scene Shopscene;
+    private Stage Shopstage;
+
 
     private static  Tile[][] TileMap;
     private static Player Player;
     private static int MAP_SIZE;
+    private static Tile StartTile;
+    private static Tile EndTile;
 
     //creating labels with informations about player and game
     private Label PlayerNick;
@@ -54,67 +61,83 @@ public class View extends Application {
     private Label Wave;
     private Label Missed;
 
-    public View(File MapDescriptor, String Name, int DifficultyLevel){
-        Map = new Map();
-        Map.setMap(MapDescriptor);
+    private int NumberOfWaves;
+    private static int ActualWave = 1;
+    private static int NumberOfMissed = 0;
+    private int MaxMissed;
+
+    public void set(File MapDescriptor, String Name){
+        map = new Map();
+        map.setMap(MapDescriptor);
         Player = new Player();
-        Player.setPlayer(Name, DifficultyLevel);
+        Player.setPlayer(Name);
+        model = new Model();
+        model.loadMap(MapDescriptor);
+        model.setPlayer(Name);
+        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
+        DrawMap(map);
     }
 
-
-    public Parent CreateGameMap(){
-        Pane root = new Pane();
-        root.getChildren().addAll(TileGroup, TowerGroup);
-
-        MAP_SIZE=Map.getMapSize();
-        TileMap = new Tile[MAP_SIZE][MAP_SIZE];
-
-        for(int i=0; i<MAP_SIZE; i++){
-            for(int j=0; j<MAP_SIZE; j++){
-                Tile tile;
-                if(Map.getCharFromMap(i,j) == Path){
-                    tile = new Tile(Tile.TileType.SKY, i, j);
+    public void DrawMap(Map map){
+        String tileName = null;
+        TileMap = new Tile[map.getMapSize()][map.getMapSize()];
+        for(int i=0; i<map.getMapSize(); i++){
+            for(int j=0; j<map.getMapSize(); j++) {
+                Tile tile = map.getTileMap()[i][j];
+                switch (tile.getTypeOfTile()) {
+                    case START:
+                        tileName = "sky.jpg";
+                        StartTile = tile;
+                        break;
+                    case END:
+                        tileName = "sky.jpg";
+                        EndTile = tile;
+                        break;
+                    case SKY:
+                        tileName = "sky.jpg";
+                        break;
+                    case CLOUD:
+                        tileName = "cloud.jpg";
+                        break;
                 }
-                else if(Map.getCharFromMap(i,j) == Start){
-                    tile =  new Tile(Tile.TileType.START, i, j);
-                }
-                else if(Map.getCharFromMap(i,j) == End){
-                    tile = new Tile(Tile.TileType.END, i, j);
-                }
-                else if(Map.getCharFromMap(i,j)== Cloud){
-                    tile = new Tile(Tile.TileType.CLOUD, i, j);
-                }
-                else{
-                    tile = tile = new Tile(Tile.TileType.SKY, i, j);
-                }
-                set(tile);
-                TileGroup.getChildren().add(tile);
                 TileMap[i][j] = tile;
-                int finalI = i;
-                int finalJ = j;
-                tile.setOnMouseClicked(new EventHandler<MouseEvent>()
-                {
-                    @Override
-                    public void handle(MouseEvent t) {
-                        if(TileMap[finalI][finalJ].getTypeOfTile()== Tile.TileType.CLOUD && t.getButton()== MouseButton.SECONDARY) {
-                            WhichTower(finalI,finalJ);
-                        }
-
-                    }
-                });
+                Image ImageToTile = new Image(getClass().getClassLoader().getResource(tileName).toString());
+                if (ImageToTile != null) {
+                    tile.setFill(new ImagePattern(ImageToTile));
+                }
+                TileGroup.getChildren().add(tile);
             }
         }
-        return root;
     }
 
-    public Parent CreatePlayerPanel(){
+    public void DrawBalloon(Balloon balloon){
+        if(balloon.getBalloonType() == Balloon.BalloonType.GREEN){
+            balloon.setFill(Color.LIMEGREEN);
+        }
+        else if(balloon.getBalloonType() == Balloon.BalloonType.RED){
+            balloon.setFill(Color.RED);
+        }
+        else if(balloon.getBalloonType() == Balloon.BalloonType.PINK){
+            balloon.setFill(Color.PINK);
+        }
+        BalloonGroup.getChildren().add(balloon);
+        ++NumberOfBalloons;
+
+    }
+
+    public void init(Stage stage){
+        PrimaryStage=stage;
+        PrimaryStage.initStyle(StageStyle.UNDECORATED);
+    }
+
+    private Parent CreatePlayerPanel(){
         GridPane root = new GridPane();
 
         //initializing labels with informations about player and game
-        PlayerNick = new Label(Player.getNick());
-        Gold = new Label("Gold: " + Player.getGold());
-        Wave = new Label(" Wave: " +" 1" + " of " + "4");
-        Missed = new Label("Missed: " + "0" + " of " + "30");
+        Label PlayerNick = new Label(Player.getNick());
+        Label Gold = new Label("Gold: " + Player.getGold());
+        Label Wave = new Label(" Wave: " +ActualWave + " of " + NumberOfWaves);
+        Label Missed = new Label("Missed: " + NumberOfMissed + " of " + MaxMissed);
 
         root.setBackground(getBackground());
 
@@ -142,53 +165,77 @@ public class View extends Application {
         return root;
     }
 
-    public void showGameScene(){
+
+
+    /*
+    tile.setOnMouseClicked(new EventHandler<MouseEvent>()
+                {
+                    @Override
+                    public void handle(MouseEvent t) {
+                        if(TileMap[finalI][finalJ].getTypeOfTile()== Tile.TileType.CLOUD && t.getButton()== MouseButton.SECONDARY) {
+                            WhichTower(finalI,finalJ);
+                        }
+
+                    }
+                });
+     */
+
+
+    private Parent CreateGameScene(){
         AnchorPane GameScene = new AnchorPane();
 
-        Pane GameMap = (Pane) CreateGameMap();
         GridPane PlayerPanel = (GridPane) CreatePlayerPanel();
 
         GameScene.getChildren().addAll(GameMap,PlayerPanel);
 
-        GameScene.setRightAnchor(GameMap, 0.0);
+        GameScene.setLeftAnchor(GameMap, 0.0);
         GameScene.setBottomAnchor(GameMap,0.0);
         GameScene.setTopAnchor(GameMap,0.0);
 
 
-        GameScene.setLeftAnchor(PlayerPanel, 0.0);
+        GameScene.setRightAnchor(PlayerPanel, 0.0);
         GameScene.setBottomAnchor(PlayerPanel,0.0);
         GameScene.setTopAnchor(PlayerPanel,0.0);
-        GameScene.setRightAnchor(PlayerPanel,640.0);
+        GameScene.setLeftAnchor(PlayerPanel,640.0);
 
-        show(GameScene);
+        return GameScene;
+
     }
 
-    public void showGameScene(Parent GameMap, Parent PlayerPanel){
+
+    public void showGameScene(){
         AnchorPane GameScene = new AnchorPane();
+
+        GridPane PlayerPanel = (GridPane) CreatePlayerPanel();
 
         GameScene.getChildren().addAll(GameMap,PlayerPanel);
 
-        GameScene.setRightAnchor(GameMap, 0.0);
+        GameScene.setLeftAnchor(GameMap, 0.0);
         GameScene.setBottomAnchor(GameMap,0.0);
         GameScene.setTopAnchor(GameMap,0.0);
 
 
-        GameScene.setLeftAnchor(PlayerPanel, 0.0);
+        GameScene.setRightAnchor(PlayerPanel, 0.0);
         GameScene.setBottomAnchor(PlayerPanel,0.0);
         GameScene.setTopAnchor(PlayerPanel,0.0);
-        GameScene.setRightAnchor(PlayerPanel,640.0);
+        GameScene.setLeftAnchor(PlayerPanel,640.0);
 
         show(GameScene);
     }
 
+
     private void buyTower(Tower.TowerType type, int row, int column){
-        Tower tower = new Tower(type, row, column);
+
+        Tower tower = new Tower(type, column, row);
         setFilling(tower);
 
         if(tower.getCost() <= Player.getGold() ){
             TowerGroup.getChildren().add(tower);
             Player.Buy(tower.getCost());
+            UpdateGameScene();
+            System.out.println("wieża zakupiona");
         }
+
 
         /*
         tower.setOnMouseClicked(new EventHandler<MouseEvent>() {
@@ -233,13 +280,17 @@ public class View extends Application {
         }
     }
 
-    private void WhichTower(int row, int column){
+    public void WhichTower(int row, int column){
+        Shopping = true;
+        rowShoping = row;
+        colShoping = column;
 
+        if(Shopstage!=null) {
+            Shopstage.close();
+        }
         AnchorPane root = new AnchorPane();
 
         root.setBackground(getBackground());
-
-        //Label FirstTypeTowerProperties = new Label("cost: " + new Tower(Tower.TowerType.FIRST).getCost());
 
         Tower FirstTypeTower = new Tower(Tower.TowerType.FIRST, 1, 1);
         setFilling(FirstTypeTower);
@@ -303,10 +354,10 @@ public class View extends Application {
             @Override
             public void handle(MouseEvent t){
                 if(t.getButton()== MouseButton.PRIMARY){
+                    Shopping=false;
                     closeWindow(FirstTypeTower);
                     buyTower(FirstTypeTower.getTypeOfTower(), row, column);
                 }
-                UpdateGameScene();
             }
         });
 
@@ -315,10 +366,10 @@ public class View extends Application {
             @Override
             public void handle(MouseEvent t){
                 if(t.getButton()== MouseButton.PRIMARY){
+                    Shopping=false;
                     buyTower(SecondTypeTower.getTypeOfTower(), row, column);
                     closeWindow(SecondTypeTower);
                 }
-                UpdateGameScene();
             }
 
         });
@@ -327,10 +378,10 @@ public class View extends Application {
             @Override
             public void handle(MouseEvent t){
                 if(t.getButton()== MouseButton.PRIMARY){
+                    Shopping=false;
                     buyTower(ThirdTypeTower.getTypeOfTower(), row, column);
                     closeWindow(ThirdTypeTower);
                 }
-                UpdateGameScene();
             }
         });
 
@@ -355,7 +406,7 @@ public class View extends Application {
         root.setLeftAnchor(ThirdTypeTowerProperties, 100.0);
         root.setRightAnchor(ThirdTypeTowerProperties, 10.0);
 
-        show(root);
+        showShop(root);
 
     }
 
@@ -367,16 +418,25 @@ public class View extends Application {
     }
 
     private void show(Parent parent){
-        Scene scene = new Scene(parent);
-        Stage stage = new Stage();
-        stage.setScene(scene);
-        stage.show();
+        ActualScene = new Scene(parent);
+        PrimaryStage.setScene(ActualScene);
+        PrimaryStage.show();
     }
 
+    private void showShop(Parent parent){
+        Shopscene = new Scene(parent);
+        Shopstage = new Stage();
+        Shopstage.setScene(Shopscene);
+        Shopstage.show();
+    }
+
+    private void showShop(){
+        WhichTower(rowShoping,colShoping);
+    }
     public void set(Tile tile){
 
         //setting filling of the Tile
-        if(tile.getTypeOfTile()== Tile.TileType.SKY || tile.getTypeOfTile()== Tile.TileType.START || tile.getTypeOfTile()== Tile.TileType.END ){                                          //if it is sky tile, sky.jpg is set as a fill
+        if(tile.getTypeOfTile()== SKY || tile.getTypeOfTile()== START || tile.getTypeOfTile()== END ){                                          //if it is sky tile, sky.jpg is set as a fill
             try {
                 tile.setFill(new ImagePattern(new Image(getClass().getClassLoader().getResource("sky.jpg").toString())));
             }
@@ -407,12 +467,59 @@ public class View extends Application {
         return back;
     }
 
-    void UpdateGameScene(){
-        PlayerNick = new Label(Player.getNick());
-        Gold = new Label("Gold: " + Player.getGold());
-        Wave = new Label(" Wave: " +" 1" + " of " + "4");
-        Missed = new Label("Missed: " + "0" + " of " + "30");
+    public void UpdateGameScene(){
+        ActualScene = new Scene(CreateGameScene());
+        PrimaryStage.setScene(ActualScene);
+        if(Shopping){
+            showShop();
+        }
+    }
 
+    public static Map getMap(){
+        return map;
+    }
+
+
+    public static int getMapSize() {
+        return MAP_SIZE;
+    }
+
+    public static Player getPlayer(){
+        return Player;
+    }
+
+    public static Group getTileGroup(){
+        return TileGroup;
+    }
+
+    public static Group getBalloonGroup(){
+        return BalloonGroup;
+    }
+
+    public static int getNumberOfBalloons(){
+        return NumberOfBalloons;
+    }
+
+    public static Tile getStartTile(){
+        return StartTile;
+    }
+
+    public static Tile getEndTile(){
+        return EndTile;
+    }
+
+    public static void removeBalloon(Balloon balloon){
+        BalloonGroup.getChildren().remove(balloon);
+    }
+
+    public void missed(){
+        ++NumberOfMissed;
+        this.UpdateGameScene();
+        --NumberOfBalloons;
+    }
+
+    public Tile[][] getTileMap(){
+        return TileMap;
     }
 
     @Override
