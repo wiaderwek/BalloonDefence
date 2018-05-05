@@ -40,7 +40,7 @@ public class GameControler {
             view.set(new File("target\\classes\\ThirdLevelMap.txt"), name);
         }
 
-        for(i=0; i<2;++i){
+        for(i=0; i<10;++i){
             Balloon balloon = new Balloon(Balloon.BalloonType.GREEN, view.getStartTile().xPosition, view.getStartTile().yPosition, view.getTileMap());
             BalloonList.add(balloon);
         }
