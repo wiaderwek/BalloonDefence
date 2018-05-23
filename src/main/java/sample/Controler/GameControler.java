@@ -53,6 +53,7 @@ public class GameControler {
         LevelControler.setView(view);
         LevelControler.setLevel(Level);
 
+        //spawning balloons
         for(i=0; i<Level.getNumberOfFirstTypeBalloon(2);++i){
             Balloon balloon = new Balloon(Balloon.BalloonType.RED, view.getStartTile().get(i%view.getStartTile().size()), view.getTileMap());
             BalloonList.add(balloon);
