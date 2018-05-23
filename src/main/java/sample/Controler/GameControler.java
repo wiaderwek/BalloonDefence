@@ -11,47 +11,72 @@ import sample.View.View;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Iterator;
-
+// refactoring guru
 public class GameControler {
-    private Model model ;
-    private Player CurentPlayer;
-    private View view;
-    private Map map;
+    private static Model model = new Model();
+    private static Player CurentPlayer;
+    private static View view = new View();
+    private static Map map = new Map();
     private Stage PrimaryStage;
-    private AnimationTimer Spawntimer;
-    private AnimationTimer Movetimer;
+    private static AnimationTimer Movetimer;
     private static ArrayList<Balloon> BalloonList = new ArrayList<Balloon>();
     private static ArrayList<Balloon> ActualBalloonList = new ArrayList<Balloon>();
+    private static boolean isStopped = false;
+    private static Level Level;
+    private static LevelControler LevelControler;
 
     public void setMap(int i, String name){
-        map = new Map();
-        view = new View();
+        Level = new Level();
+        LevelControler = new LevelControler();
         model = new Model();
+        CurentPlayer = new Player();
+        view = new View();
+        map = new Map();
+        BalloonList = new ArrayList<Balloon>();
+        ActualBalloonList = new ArrayList<Balloon>();
         if(i == 1){
             map.setMap(new File("target\\classes\\FirstLevelMap.txt"));
             view.set(new File("target\\classes\\FirstLevelMap.txt"), name);
+            Level.loadLevel(1);
         }
         else if(i==2){
             map.setMap(new File("target\\classes\\SecondLevelMap.txt"));
             view.set(new File("target\\classes\\SecondLevelMap.txt"), name);
+            Level.loadLevel(1);
         }
         else if(i==3){
-            map.setMap(new File("target\\classes\\ThirdLevelMap.txt"));
+            //map.setMap(new File("target\\classes\\ThirdLevelMap.txt"));
             view.set(new File("target\\classes\\ThirdLevelMap.txt"), name);
+            Level.loadLevel(1);
         }
 
-        for(i=0; i<10;++i){
+        LevelControler.setView(view);
+        LevelControler.setLevel(Level);
+
+        for(i=0; i<Level.getNumberOfFirstTypeBalloon(2);++i){
+            Balloon balloon = new Balloon(Balloon.BalloonType.RED, view.getStartTile().xPosition, view.getStartTile().yPosition, view.getTileMap());
+            BalloonList.add(balloon);
+        }
+
+        for(i=0; i<Level.getNumberOfSecondTypeBalloon(2);++i){
             Balloon balloon = new Balloon(Balloon.BalloonType.GREEN, view.getStartTile().xPosition, view.getStartTile().yPosition, view.getTileMap());
+            BalloonList.add(balloon);
+        }
+
+        for(i=0; i<Level.getNumberOfFirstTypeBalloon(2);++i){
+            Balloon balloon = new Balloon(Balloon.BalloonType.PINK, view.getStartTile().xPosition, view.getStartTile().yPosition, view.getTileMap());
             BalloonList.add(balloon);
         }
 
         model.setMap(map);
         model.setPlayer(name);
-        spawn(BalloonList);
-        move();
+        LevelControler.spawn(BalloonList);
+        LevelControler.move();
+        LevelControler.start();
+        //move();
         goToShop();
-        Spawntimer.start();
-        Movetimer.start();
+        //Spawntimer.start();
+        //Movetimer.start();
 
         view.showGameScene();
 
@@ -63,13 +88,17 @@ public class GameControler {
             tile.setOnMouseClicked(new EventHandler<MouseEvent>() {
                 @Override
                 public void handle(MouseEvent event) {
-                    if (event.getButton() == MouseButton.SECONDARY) {
-                        Spawntimer.stop();
-                        Movetimer.stop();
-                        view.WhichTower(tile.getxPosition(), tile.getyPosition());
+                    if (tile.getTypeOfTile() == Tile.TileType.CLOUD) {
+                        if (event.getButton() == MouseButton.SECONDARY) {
+                            //LevelControler.stop();
+                            //Spawntimer.stop();
+                            //Movetimer.stop();
+                            view.WhichTower(tile.getxPosition(), tile.getyPosition());
 
-                        Spawntimer.start();
-                        Movetimer.start();
+                            //Spawntimer.start();
+                            //Movetimer.start();
+                            //LevelControler.start();
+                        }
                     }
                 }
 
@@ -77,6 +106,7 @@ public class GameControler {
         }
     }
 
+    /*
     private void spawn(ArrayList<Balloon> balloons ){
         Spawntimer = new AnimationTimer() {
             long Lasttime = 0;
@@ -96,8 +126,8 @@ public class GameControler {
 
         };
     }
-
-
+       */
+    /*
     private void move(){
         Movetimer = new AnimationTimer() {
             long LasttimeMove = 0;
@@ -119,6 +149,41 @@ public class GameControler {
                 }
             }
         };
+    }
+    */
+    public static void stopTimers(){
+        //Spawntimer.stop();
+        //Movetimer.stop();
+        LevelControler.stop();
+        isStopped = true;
+    }
+
+    public static void StopPlay(){
+        if(isStopped){
+            //Spawntimer.start();
+            //Movetimer.start();
+            LevelControler.start();
+            isStopped = false;
+        }else{
+            stopTimers();
+        }
+    }
+
+    public static void endOfTheGame() throws Throwable {
+        model = null;
+        CurentPlayer = null;
+        map.clear();
+        view.clear();
+        BalloonList.clear();
+        ActualBalloonList.clear();
+        LevelControler.finish();
+        Level = null;
+    }
+
+    @Override
+    protected void finalize() throws Throwable {
+        System.out.println("obj żegna!");
+        super.finalize();
     }
 
 

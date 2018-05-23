@@ -21,8 +21,8 @@ public class Map extends StackPane{
     private static final int GridHeight = MAP_SIZE;
     private static final int GridWidth = MAP_SIZE;
 
-    private int xStartPosition;
-    private int yStartPosition;
+    private static int xStartPosition;
+    private static int yStartPosition;
 
     //descriptor of Map.map table -- needed to create TileMap
     private static final char Path = 'p';
@@ -32,7 +32,7 @@ public class Map extends StackPane{
 
 
 
-    public void setMap(File Mapdescriptor){
+    public static void setMap(File Mapdescriptor){
         try {
             BufferedReader BufferReader =  new BufferedReader(new FileReader(Mapdescriptor));                 //loadin file with amp descriptor
 
@@ -54,7 +54,7 @@ public class Map extends StackPane{
 
     }
 
-    private void CreateGameMap(){
+    private static void CreateGameMap(){
         for(int i=0; i<MAP_SIZE; i++){
             for(int j=0; j<MAP_SIZE; j++){
                 Tile tile;
@@ -84,7 +84,7 @@ public class Map extends StackPane{
 
 
 
-    private void setTileToTileMap (TileType type, int column, int row){
+    private static void setTileToTileMap (TileType type, int column, int row){
         Tile tile = new Tile(type, column, row);
         TileMap[column][row] = tile;
 
@@ -97,6 +97,15 @@ public class Map extends StackPane{
 
     public int getMapSize(){
         return MAP_SIZE;
+    }
+
+    public Tile.TileType getTileType(int row, int col){
+        return TileMap[row][col].getTypeOfTile();
+    }
+
+    public void clear(){
+        TileMap = new Tile[MAP_SIZE][MAP_SIZE];
+        map = new char[MAP_SIZE][MAP_SIZE];
     }
 
 

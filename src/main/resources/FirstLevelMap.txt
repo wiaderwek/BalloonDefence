@@ -1,9 +1,9 @@
-cccscccccc
-cccpppcccc
-pppccpcccc
-pcpccpcccc
-pcppppcccc
-pccccccccc
+cccscccccs
+cccpppcccp
+pppccpcccp
+pcpccpcccp
+pcppppccpp
+pcccccccec
 pccccccccc
 pccccccccc
 ppppcccccc

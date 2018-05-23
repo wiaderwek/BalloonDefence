@@ -7,6 +7,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
@@ -18,6 +19,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import javafx.stage.StageStyle;
+import sample.Controler.GameControler;
 import sample.Model.*;
 
 import java.io.File;
@@ -33,20 +35,25 @@ public class View extends Application {
     private static Map map;
     private static Model model;
 
-    private static Pane GameMap = new Pane();
+    private static Pane GameMap;
 
 
     private static Group TileGroup = new Group();
     private static Group TowerGroup = new Group();
     private static Group BalloonGroup = new Group();
 
+    static{
+        GameMap = new Pane();
+        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
+    }
+
     private static int NumberOfBalloons = 0;
 
     private static boolean Shopping = false;
     private int rowShoping;
     private int colShoping;
-    private Scene Shopscene;
-    private Stage Shopstage;
+    private static Scene Shopscene;
+    private static Stage Shopstage;
 
 
     private static  Tile[][] TileMap;
@@ -74,7 +81,7 @@ public class View extends Application {
         model = new Model();
         model.loadMap(MapDescriptor);
         model.setPlayer(Name);
-        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
+        //GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
         DrawMap(map);
     }
 
@@ -138,6 +145,7 @@ public class View extends Application {
         Label Gold = new Label("Gold: " + Player.getGold());
         Label Wave = new Label(" Wave: " +ActualWave + " of " + NumberOfWaves);
         Label Missed = new Label("Missed: " + NumberOfMissed + " of " + MaxMissed);
+        Button Finish = new Button("Play/Stop");
 
         root.setBackground(getBackground());
 
@@ -157,10 +165,29 @@ public class View extends Application {
         Missed.setStyle("-fx-background-color: transparent");
         Missed.setTextFill(Color.ROYALBLUE);
 
+        Finish.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
+        Finish.setStyle("-fx-background-color: transparent");
+        Finish.setTextFill(Color.CORAL);
+
+        Finish.setOnAction(event -> {
+            Stage stage = (Stage) Finish.getScene().getWindow(); // getting the actual stage
+            stage.close();
+            GameControler.StopPlay();
+            try {
+                GameControler.endOfTheGame();
+            }
+            catch (Throwable throwable){
+
+            }
+            UpdateGameScene();
+
+        });
+
         root.add(PlayerNick, 1,1);
         root.add(Gold,1,2,2,1);
         root.add(Wave,1,3,2,1);
         root.add(Missed,1,4, 3,1);
+        root.add(Finish,1,8,1,1);
 
         return root;
     }
@@ -225,16 +252,15 @@ public class View extends Application {
 
 
     private void buyTower(Tower.TowerType type, int row, int column){
+            Tower tower = new Tower(type, column, row);
+            setFilling(tower);
 
-        Tower tower = new Tower(type, column, row);
-        setFilling(tower);
+            if (tower.getCost() <= Player.getGold()) {
+                TowerGroup.getChildren().add(tower);
+                Player.Buy(tower.getCost());
+                UpdateGameScene();
+            }
 
-        if(tower.getCost() <= Player.getGold() ){
-            TowerGroup.getChildren().add(tower);
-            Player.Buy(tower.getCost());
-            UpdateGameScene();
-            System.out.println("wieża zakupiona");
-        }
 
 
         /*
@@ -512,6 +538,10 @@ public class View extends Application {
         BalloonGroup.getChildren().remove(balloon);
     }
 
+    public static void moveBalloonToStart(Balloon balloon){
+        balloon.set(StartTile.xPosition, StartTile.yPosition);
+    }
+
     public void missed(){
         ++NumberOfMissed;
         this.UpdateGameScene();
@@ -520,6 +550,20 @@ public class View extends Application {
 
     public Tile[][] getTileMap(){
         return TileMap;
+    }
+
+    public void clear(){
+        PrimaryStage = new Stage();
+        //ActualScene = new Scene();
+        TileGroup = new Group();
+        TowerGroup = new Group();
+        BalloonGroup = new Group();
+        GameMap = new Pane();
+        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
+        NumberOfBalloons = 0;
+        ActualWave = 1;
+        NumberOfMissed = 0;
+
     }
 
     @Override

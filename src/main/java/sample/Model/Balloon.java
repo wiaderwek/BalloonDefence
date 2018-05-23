@@ -19,8 +19,8 @@ public class Balloon extends Circle{
 
     private Tile[][] TileMap;
 
-    private static final int PRIMARY_HEALTH= 20;
-    private static final double PRIMARY_SPEED = 5;
+    private static final int PRIMARY_HEALTH = 20;
+    private static final double PRIMARY_SPEED = 1;
 
     public enum BalloonType{
         RED, GREEN, PINK
@@ -46,7 +46,7 @@ public class Balloon extends Circle{
         } else {
             setFill(Color.PINK);
             health = (int) (1.5 * PRIMARY_HEALTH);
-            speed = 2 * PRIMARY_SPEED;
+            speed = 3 * PRIMARY_SPEED;
         }
         this.TileMap = TileMap;
         direction = null;
@@ -60,19 +60,17 @@ public class Balloon extends Circle{
     }
 
     public void move() {
-        setDirection();
-        if(direction==Direction.UP){
-            move(0,-1);
-        }
-        else if(direction==Direction.DOWN){
-            move(0,1);
-        }
-        else if(direction==Direction.RIGHT){
-            move(1,0);
-        }
-        else if(direction==Direction.LEFT){
-            move(-1,0);
-        }
+            setDirection();
+            if (direction == Direction.UP) {
+                move(0, -1);
+            } else if (direction == Direction.DOWN) {
+                move(0, 1);
+            } else if (direction == Direction.RIGHT) {
+                move(1, 0);
+            } else if (direction == Direction.LEFT) {
+                move(-1, 0);
+            }
+
     }
 
     public BalloonType getBalloonType(){
@@ -85,26 +83,27 @@ public class Balloon extends Circle{
 
     private void setDirection(){
         if((xPosition)%64==0 && (yPosition)%64==0) {
-            System.out.println(xPosition/64);
-            System.out.println(yPosition/64);
             double x = Math.floor(xPosition / 64);
             double y = Math.floor(yPosition / 64);
+            System.out.println(x);
+            System.out.println(x);
+            System.out.println(TileMap.length);
             if (x == 0 && y == 0) {
                 if ((TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.LEFT)
                     direction = Direction.RIGHT;
                 else if ((TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.UP)
                     direction = Direction.DOWN;
-            } else if (x == 0 && y == TileMap.length) {
+            } else if (x == 0 && y == TileMap.length - 1) {
                 if ((TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.LEFT)
                     direction = Direction.RIGHT;
                 else if ((TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.DOWN)
                     direction = Direction.UP;
-            } else if (x == TileMap.length && y == 0) {
+            } else if (x == TileMap.length - 1 && y == 0) {
                 if ((TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.RIGHT)
                     direction = Direction.LEFT;
                 else if ((TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.UP)
                     direction = Direction.DOWN;
-            } else if (x == TileMap.length && y == TileMap.length) {
+            } else if (x == TileMap.length - 1 && y == TileMap.length - 1) {
                 if ((TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.RIGHT)
                     direction = Direction.LEFT;
                 else if ((TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.DOWN)
@@ -123,6 +122,20 @@ public class Balloon extends Circle{
                     direction = Direction.UP;
                 else if ((TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.LEFT)
                     direction = Direction.RIGHT;
+            } else if(x == TileMap.length - 1) {
+                if ((TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.RIGHT)
+                    direction = Direction.LEFT;
+                else if ((TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.DOWN)
+                    direction = Direction.UP;
+                else if ((TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.UP)
+                    direction = Direction.DOWN;
+            } else if(y == TileMap.length - 1){
+                if ((TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.RIGHT)
+                    direction = Direction.LEFT;
+                else if ((TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y - 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.DOWN)
+                    direction = Direction.UP;
+                else if ((TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.LEFT)
+                    direction = Direction.RIGHT;
             } else {
                 if ((TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x - 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.RIGHT)
                     direction = Direction.LEFT;
@@ -133,8 +146,17 @@ public class Balloon extends Circle{
                 else if ((TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y + 1][(int) x].getTypeOfTile() == Tile.TileType.END) && direction != Direction.UP)
                     direction = Direction.DOWN;
             }
-            System.out.println("koniec");
         }
+    }
+
+    public double getSpeed(){
+        return speed;
+    }
+
+    public void set(double row, double col){
+        xPosition=row*64;
+        yPosition=col*64;
+        relocate(xPosition,yPosition);
     }
 
 }
