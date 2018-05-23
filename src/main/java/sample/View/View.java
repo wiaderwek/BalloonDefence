@@ -23,6 +23,7 @@ import sample.Controler.GameControler;
 import sample.Model.*;
 
 import java.io.File;
+import java.util.ArrayList;
 
 import static sample.Model.Tile.TileType.*;
 
@@ -59,8 +60,8 @@ public class View extends Application {
     private static  Tile[][] TileMap;
     private static Player Player;
     private static int MAP_SIZE;
-    private static Tile StartTile;
-    private static Tile EndTile;
+    private static ArrayList<Tile> StartTile = new ArrayList<Tile>();
+    private static ArrayList<Tile> EndTile = new ArrayList<Tile>();
 
     //creating labels with informations about player and game
     private Label PlayerNick;
@@ -94,11 +95,11 @@ public class View extends Application {
                 switch (tile.getTypeOfTile()) {
                     case START:
                         tileName = "sky.jpg";
-                        StartTile = tile;
+                        StartTile.add(tile);
                         break;
                     case END:
                         tileName = "sky.jpg";
-                        EndTile = tile;
+                        EndTile.add(tile);
                         break;
                     case SKY:
                         tileName = "sky.jpg";
@@ -145,7 +146,7 @@ public class View extends Application {
         Label Gold = new Label("Gold: " + Player.getGold());
         Label Wave = new Label(" Wave: " +ActualWave + " of " + NumberOfWaves);
         Label Missed = new Label("Missed: " + NumberOfMissed + " of " + MaxMissed);
-        Button Finish = new Button("Play/Stop");
+        Button Finish = new Button("End");
 
         root.setBackground(getBackground());
 
@@ -526,11 +527,11 @@ public class View extends Application {
         return NumberOfBalloons;
     }
 
-    public static Tile getStartTile(){
+    public static ArrayList<Tile> getStartTile(){
         return StartTile;
     }
 
-    public static Tile getEndTile(){
+    public static ArrayList<Tile> getEndTile(){
         return EndTile;
     }
 
@@ -539,7 +540,7 @@ public class View extends Application {
     }
 
     public static void moveBalloonToStart(Balloon balloon){
-        balloon.set(StartTile.xPosition, StartTile.yPosition);
+        balloon.set(balloon.getSpawnTile().xPosition, balloon.getSpawnTile().yPosition);
     }
 
     public void missed(){
@@ -550,6 +551,10 @@ public class View extends Application {
 
     public Tile[][] getTileMap(){
         return TileMap;
+    }
+
+    public Tile getTileInTileMap(int x, int y){
+        return TileMap[y][x];
     }
 
     public void clear(){
@@ -563,6 +568,8 @@ public class View extends Application {
         NumberOfBalloons = 0;
         ActualWave = 1;
         NumberOfMissed = 0;
+        StartTile.clear();
+        EndTile.clear();
 
     }
 

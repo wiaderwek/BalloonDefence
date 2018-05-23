@@ -14,6 +14,7 @@ public class Balloon extends Circle{
     private int health;                                         //health points of the balloon
     private double speed;                                       //speed of the balloon
     private boolean isAlive;                                    //if this balloon is alive it's true
+    private Tile SpawnTile;                                      //Tile on wich the balloon was spawned
 
     private Direction direction = null;
 
@@ -26,13 +27,14 @@ public class Balloon extends Circle{
         RED, GREEN, PINK
     }
 
-    public Balloon(BalloonType type, double x, double y, Tile[][] TileMap) {
-        xPosition = x * 64;
-        yPosition = y * 64;
+    public Balloon(BalloonType type, Tile Starttile, Tile[][] TileMap) {
+        SpawnTile = Starttile;
+        xPosition = Starttile.xPosition * 64;
+        yPosition = Starttile.yPosition * 64;
         isAlive = true;
 
         setRadius(BALLOON_SIZE);
-        relocate(x * 64, y * 64);
+        relocate(xPosition, yPosition);
 
         //Setting right color for the balloon which depends on balloon type
         if (type == BalloonType.RED) {
@@ -85,9 +87,6 @@ public class Balloon extends Circle{
         if((xPosition)%64==0 && (yPosition)%64==0) {
             double x = Math.floor(xPosition / 64);
             double y = Math.floor(yPosition / 64);
-            System.out.println(x);
-            System.out.println(x);
-            System.out.println(TileMap.length);
             if (x == 0 && y == 0) {
                 if ((TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.SKY || TileMap[(int) y][(int) x + 1].getTypeOfTile() == Tile.TileType.END) && direction != Direction.LEFT)
                     direction = Direction.RIGHT;
@@ -157,6 +156,10 @@ public class Balloon extends Circle{
         xPosition=row*64;
         yPosition=col*64;
         relocate(xPosition,yPosition);
+    }
+
+    public Tile getSpawnTile(){
+        return SpawnTile;
     }
 
 }

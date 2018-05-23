@@ -3,6 +3,7 @@ package sample.Controler;
 import javafx.animation.AnimationTimer;
 import sample.Model.Balloon;
 import sample.Model.Level;
+import sample.Model.Tile;
 import sample.View.View;
 
 import java.util.ArrayList;
@@ -70,7 +71,8 @@ public class LevelControler {
                     Balloon balloon = iterator.next();
                     if((ActualNow - LasttimeMove) > 1000000) {
                             for(int i=0; i<balloon.getSpeed(); ++i) {
-                                if(balloon.xPosition / 64 != view.getEndTile().xPosition || balloon.yPosition / 64 != view.getEndTile().yPosition) {
+                                if(view.getTileInTileMap((int)(balloon.xPosition/64), (int)(balloon.yPosition/64)).getTypeOfTile() != Tile.TileType.END){
+                                //if(balloon.xPosition / 64 != view.getEndTile().xPosition || balloon.yPosition / 64 != view.getEndTile().yPosition) {
                                     balloon.move();
                                 }
                                 else {

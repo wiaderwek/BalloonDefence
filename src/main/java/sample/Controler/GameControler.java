@@ -54,17 +54,17 @@ public class GameControler {
         LevelControler.setLevel(Level);
 
         for(i=0; i<Level.getNumberOfFirstTypeBalloon(2);++i){
-            Balloon balloon = new Balloon(Balloon.BalloonType.RED, view.getStartTile().xPosition, view.getStartTile().yPosition, view.getTileMap());
+            Balloon balloon = new Balloon(Balloon.BalloonType.RED, view.getStartTile().get(i%view.getStartTile().size()), view.getTileMap());
             BalloonList.add(balloon);
         }
 
         for(i=0; i<Level.getNumberOfSecondTypeBalloon(2);++i){
-            Balloon balloon = new Balloon(Balloon.BalloonType.GREEN, view.getStartTile().xPosition, view.getStartTile().yPosition, view.getTileMap());
+            Balloon balloon = new Balloon(Balloon.BalloonType.GREEN, view.getStartTile().get(i%view.getStartTile().size()), view.getTileMap());
             BalloonList.add(balloon);
         }
 
         for(i=0; i<Level.getNumberOfFirstTypeBalloon(2);++i){
-            Balloon balloon = new Balloon(Balloon.BalloonType.PINK, view.getStartTile().xPosition, view.getStartTile().yPosition, view.getTileMap());
+            Balloon balloon = new Balloon(Balloon.BalloonType.PINK, view.getStartTile().get(i%view.getStartTile().size()), view.getTileMap());
             BalloonList.add(balloon);
         }
 
