@@ -15,6 +15,7 @@ public class Balloon extends Circle{
     private double speed;                                       //speed of the balloon
     private boolean isAlive;                                    //if this balloon is alive it's true
     private Tile SpawnTile;                                      //Tile on wich the balloon was spawned
+    private int Gold;
 
     private Direction direction = null;
 
@@ -22,6 +23,7 @@ public class Balloon extends Circle{
 
     private static final int PRIMARY_HEALTH = 20;
     private static final double PRIMARY_SPEED = 1;
+    private static final int PRIMARY_GOLD = 5;
 
     public enum BalloonType{
         RED, GREEN, PINK
@@ -41,14 +43,18 @@ public class Balloon extends Circle{
             setFill(Color.RED);
             health = PRIMARY_HEALTH;
             speed = PRIMARY_SPEED;
+            Gold = PRIMARY_GOLD;
         } else if (type == BalloonType.GREEN) {
             setFill(Color.LIMEGREEN);
             health = 2 * PRIMARY_HEALTH;
             speed = PRIMARY_SPEED;
+            Gold = 2 * PRIMARY_GOLD;
+
         } else {
             setFill(Color.PINK);
             health = (int) (1.5 * PRIMARY_HEALTH);
             speed = 3 * PRIMARY_SPEED;
+            Gold = 3 * PRIMARY_GOLD;
         }
         this.TileMap = TileMap;
         direction = null;
@@ -160,6 +166,33 @@ public class Balloon extends Circle{
 
     public Tile getSpawnTile(){
         return SpawnTile;
+    }
+
+    public boolean isAlive(){
+        if(health>0)
+            return true;
+        return false;
+    }
+
+    public void getDamage(int damage){
+        health-=damage;
+    }
+
+    public boolean alive(){
+        if(health>0){
+            isAlive = true;
+            return true;
+        }
+        isAlive = false;
+        return false;
+    }
+
+    public double getBalloonSize(){
+        return BALLOON_SIZE;
+    }
+
+    public int getGold(){
+        return Gold;
     }
 
 }

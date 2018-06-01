@@ -1,8 +1,8 @@
 package sample.Model;
 
 public class Player {
-    private String Nick;
-    private int Gold;
+    private static String Nick;
+    private static int Gold;
 
     private static final int PRIMARY_GOLD = 100;
 
@@ -21,5 +21,9 @@ public class Player {
 
     public String getNick() {
         return Nick;
+    }
+
+    public void getGold(Balloon balloon){
+        Gold+=balloon.getGold();
     }
 }

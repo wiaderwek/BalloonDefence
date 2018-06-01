@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 // refactoring guru
 public class GameControler {
+    private static Level Level;
     private static Model model = new Model();
     private static Player CurentPlayer;
     private static View view = new View();
@@ -21,8 +22,8 @@ public class GameControler {
     private static AnimationTimer Movetimer;
     private static ArrayList<Balloon> BalloonList = new ArrayList<Balloon>();
     private static ArrayList<Balloon> ActualBalloonList = new ArrayList<Balloon>();
+    private static ArrayList<Tower> TowerList = new ArrayList<Tower>();
     private static boolean isStopped = false;
-    private static Level Level;
     private static LevelControler LevelControler;
 
     public void setMap(int i, String name){
@@ -53,29 +54,16 @@ public class GameControler {
         LevelControler.setView(view);
         LevelControler.setLevel(Level);
 
-        //spawning balloons
-        for(i=0; i<Level.getNumberOfFirstTypeBalloon(2);++i){
-            Balloon balloon = new Balloon(Balloon.BalloonType.RED, view.getStartTile().get(i%view.getStartTile().size()), view.getTileMap());
-            BalloonList.add(balloon);
-        }
-
-        for(i=0; i<Level.getNumberOfSecondTypeBalloon(2);++i){
-            Balloon balloon = new Balloon(Balloon.BalloonType.GREEN, view.getStartTile().get(i%view.getStartTile().size()), view.getTileMap());
-            BalloonList.add(balloon);
-        }
-
-        for(i=0; i<Level.getNumberOfFirstTypeBalloon(2);++i){
-            Balloon balloon = new Balloon(Balloon.BalloonType.PINK, view.getStartTile().get(i%view.getStartTile().size()), view.getTileMap());
-            BalloonList.add(balloon);
-        }
 
         model.setMap(map);
         model.setPlayer(name);
-        LevelControler.spawn(BalloonList);
+        LevelControler.spawn();
         LevelControler.move();
+        LevelControler.shoot();
+        LevelControler.moveBullets();
         LevelControler.start();
         //move();
-        goToShop();
+        LevelControler.goToShop();
         //Spawntimer.start();
         //Movetimer.start();
 
@@ -152,9 +140,11 @@ public class GameControler {
         };
     }
     */
+
+    public static int getNumberOfBalloons(){
+        return BalloonList.size();
+    }
     public static void stopTimers(){
-        //Spawntimer.stop();
-        //Movetimer.stop();
         LevelControler.stop();
         isStopped = true;
     }
@@ -181,11 +171,24 @@ public class GameControler {
         Level = null;
     }
 
-    @Override
-    protected void finalize() throws Throwable {
-        System.out.println("obj żegna!");
-        super.finalize();
+    public static void addGold(Balloon balloon){
+        CurentPlayer.getGold(balloon);
+        view.UpdateGameScene();
     }
+
+    public static boolean stop_start(){
+        if(isStopped){
+            isStopped=false;
+            LevelControler.start();
+        }
+        else{
+            isStopped = true;
+            LevelControler.stop();
+        }
+
+        return isStopped;
+    }
+
 
 
 

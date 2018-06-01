@@ -1,6 +1,9 @@
 package sample.Model;
 
+import sample.View.View;
+
 import java.io.*;
+import java.util.ArrayList;
 
 public class Level {
     private static int BalloonsForEachWave[][];
@@ -40,5 +43,33 @@ public class Level {
 
     public static int getNumberOfThirdTypeBalloon(int wave){
         return BalloonsForEachWave[wave-1][2];
+    }
+
+    public static int getNumberOfBalloonsForWave(int wave){
+        int NumberOfBalloons = (getNumberOfFirstTypeBalloon(wave) + getNumberOfSecondTypeBalloon(wave) + getNumberOfThirdTypeBalloon(wave));
+        return NumberOfBalloons;
+    }
+    public static int getNumberOfWaves(){
+        return BalloonsForEachWave.length;
+    }
+
+    public static ArrayList<Balloon> getBalloonListforWave(int wave){
+        ArrayList<Balloon> BalloonsForWave = new ArrayList<Balloon>();
+
+            for(int i=0; i<Level.getNumberOfFirstTypeBalloon(wave);++i){
+                Balloon balloon = new Balloon(Balloon.BalloonType.RED, View.getStartTile().get(i%View.getStartTile().size()), View.getTileMap());
+                BalloonsForWave.add(balloon);
+            }
+
+            for(int i=0; i<Level.getNumberOfSecondTypeBalloon(wave);++i){
+                Balloon balloon = new Balloon(Balloon.BalloonType.GREEN, View.getStartTile().get(i%View.getStartTile().size()), View.getTileMap());
+                BalloonsForWave.add(balloon);
+            }
+
+            for(int i=0; i<Level.getNumberOfThirdTypeBalloon(wave);++i){
+                Balloon balloon = new Balloon(Balloon.BalloonType.PINK, View.getStartTile().get(i%View.getStartTile().size()), View.getTileMap());
+                BalloonsForWave.add(balloon);
+            }
+        return BalloonsForWave;
     }
 }

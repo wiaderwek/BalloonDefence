@@ -1,9 +1,13 @@
 package sample.Model;
 
+import javafx.animation.AnimationTimer;
 import javafx.scene.image.Image;
 import javafx.scene.paint.Color;
 import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Rectangle;
+
+import java.util.ArrayList;
+import java.util.Iterator;
 
 public class Tower extends Rectangle{
     private static final double TOWER_SIZE = 64;            //tile's with tower size (height and width)
@@ -13,10 +17,12 @@ public class Tower extends Rectangle{
     private int cost;                                       //cost of the tower
     private int damage;                                     //single hit damage
     private double speed;                                   //number of hits per second
+    private Balloon target;                                 //target of the tower
 
     private static final int PRIMARY_COST = 10;
     private static final int PRIMARY_DAMAGE = 10;
-    private static final int PRIMARY_SPEED = 2;
+    private static final int PRIMARY_SPEED = 5;
+
 
 
     public enum TowerType{
@@ -78,5 +84,54 @@ public class Tower extends Rectangle{
     public double getSpeed(){
         return speed;
     }
+
+    public void setTarget(ArrayList<Balloon> TargetList){
+        if(target!=null){
+            if(target.isAlive()){
+                return;
+            }
+            else{
+                FindNearestTarget(TargetList);
+            }
+        }
+        else{
+            FindNearestTarget(TargetList);
+        }
+    }
+
+    public void FindNearestTarget(ArrayList<Balloon> TargetList){
+        double distance = 9999;
+
+        double yPos = yPosition*64;
+        double xPos = xPosition*64;
+
+        for(Iterator<Balloon> iterator = TargetList.iterator(); iterator.hasNext();){
+            Balloon balloon = iterator.next();
+            if(target==null){
+                target = balloon;
+                distance = (Math.sqrt(Math.pow(target.yPosition-yPos,2.0) + Math.pow(target.xPosition - xPos,2.0)));
+            } else{
+                if(distance > (Math.sqrt(Math.pow(balloon.yPosition-yPos,2.0) + Math.pow(balloon.xPosition - xPos,2.0)))){
+                    target = balloon;
+                    distance = (Math.sqrt(Math.pow(balloon.yPosition-yPos,2.0) + Math.pow(balloon.xPosition - xPos,2.0)));
+                }
+            }
+        }
+    }
+
+
+
+    public Balloon getTarget() {
+        return target;
+    }
+
+    public int getxPosition(){
+        return xPosition;
+    }
+
+    public int getyPosition(){
+        return yPosition;
+    }
+
 
 }

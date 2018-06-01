@@ -35,6 +35,7 @@ public class View extends Application {
     private static double Height;
     private static Map map;
     private static Model model;
+    private static Level level;
 
     private static Pane GameMap;
 
@@ -42,10 +43,17 @@ public class View extends Application {
     private static Group TileGroup = new Group();
     private static Group TowerGroup = new Group();
     private static Group BalloonGroup = new Group();
+    private static Group BulletGroup = new Group();
+
+    private static ArrayList<Tower> TowerList = new ArrayList<Tower>();
+    private static ArrayList<Bullet> BulletList = new ArrayList<Bullet>();
+
+    private static int NumOfKilledBalloons = 0;
 
     static{
         GameMap = new Pane();
-        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
+        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup, BulletGroup);
+        level = new Level();
     }
 
     private static int NumberOfBalloons = 0;
@@ -64,15 +72,17 @@ public class View extends Application {
     private static ArrayList<Tile> EndTile = new ArrayList<Tile>();
 
     //creating labels with informations about player and game
-    private Label PlayerNick;
-    private Label Gold;
-    private Label Wave;
-    private Label Missed;
+    private static Label PlayerNick;
+    private static Label Gold;
+    private static Label Wave;
+    private static Label Missed;
+
+    private static Button Start_stop;
 
     private int NumberOfWaves;
     private static int ActualWave = 1;
     private static int NumberOfMissed = 0;
-    private int MaxMissed;
+    private static int MaxMissed = 30;
 
     public void set(File MapDescriptor, String Name){
         map = new Map();
@@ -141,11 +151,16 @@ public class View extends Application {
     private Parent CreatePlayerPanel(){
         GridPane root = new GridPane();
 
+        int NumberOfBalloonsForWave = Level.getNumberOfBalloonsForWave(ActualWave);
+        NumberOfWaves = Level.getNumberOfWaves();
+
         //initializing labels with informations about player and game
         Label PlayerNick = new Label(Player.getNick());
         Label Gold = new Label("Gold: " + Player.getGold());
         Label Wave = new Label(" Wave: " +ActualWave + " of " + NumberOfWaves);
         Label Missed = new Label("Missed: " + NumberOfMissed + " of " + MaxMissed);
+        Label Killed = new Label("Killed Balloons: " + NumOfKilledBalloons + " / " + NumberOfBalloonsForWave );
+        Start_stop = new Button("Stop");
         Button Finish = new Button("End");
 
         root.setBackground(getBackground());
@@ -166,9 +181,17 @@ public class View extends Application {
         Missed.setStyle("-fx-background-color: transparent");
         Missed.setTextFill(Color.ROYALBLUE);
 
+        Killed.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
+        Killed.setStyle("-fx-background-color: transparent");
+        Killed.setTextFill(Color.CORAL);
+
+        Start_stop.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
+        Start_stop.setStyle("-fx-background-color: transparent");
+        Start_stop.setTextFill(Color.LIMEGREEN);
+
         Finish.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
         Finish.setStyle("-fx-background-color: transparent");
-        Finish.setTextFill(Color.CORAL);
+        Finish.setTextFill(Color.ROYALBLUE);
 
         Finish.setOnAction(event -> {
             Stage stage = (Stage) Finish.getScene().getWindow(); // getting the actual stage
@@ -184,10 +207,21 @@ public class View extends Application {
 
         });
 
+        Start_stop.setOnAction( event -> {
+            if(GameControler.stop_start()){
+                Start_stop.setText("Play");
+            }
+            else{
+                Start_stop.setText("Stop");
+            }
+        });
+
         root.add(PlayerNick, 1,1);
         root.add(Gold,1,2,2,1);
         root.add(Wave,1,3,2,1);
         root.add(Missed,1,4, 3,1);
+        root.add(Killed,1,5,3,1);
+        root.add(Start_stop,1,6,1,1);
         root.add(Finish,1,8,1,1);
 
         return root;
@@ -258,6 +292,7 @@ public class View extends Application {
 
             if (tower.getCost() <= Player.getGold()) {
                 TowerGroup.getChildren().add(tower);
+                TowerList.add(tower);
                 Player.Buy(tower.getCost());
                 UpdateGameScene();
             }
@@ -376,13 +411,13 @@ public class View extends Application {
         SecondTypeTowerProperties.getChildren().addAll(SecondTypeTowerCDS);
         ThirdTypeTowerProperties.getChildren().addAll(ThirdTypeTowerCDS);
 
-
         FirstTypeTower.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
             public void handle(MouseEvent t){
                 if(t.getButton()== MouseButton.PRIMARY){
                     Shopping=false;
                     closeWindow(FirstTypeTower);
+                    //FinalTower = new Tower(FirstTypeTower.getTypeOfTower(),row,column);
                     buyTower(FirstTypeTower.getTypeOfTower(), row, column);
                 }
             }
@@ -537,6 +572,7 @@ public class View extends Application {
 
     public static void removeBalloon(Balloon balloon){
         BalloonGroup.getChildren().remove(balloon);
+        balloon = null;
     }
 
     public static void moveBalloonToStart(Balloon balloon){
@@ -549,12 +585,52 @@ public class View extends Application {
         --NumberOfBalloons;
     }
 
-    public Tile[][] getTileMap(){
+    public static Tile[][] getTileMap(){
         return TileMap;
     }
 
     public Tile getTileInTileMap(int x, int y){
         return TileMap[y][x];
+    }
+
+    public void DrawBullet(Bullet bullet){
+        BulletList.add(bullet);
+        BulletGroup.getChildren().add(bullet);
+    }
+
+    public void RemoveBullet(Bullet bullet){
+        BulletList.remove(bullet);
+        BulletGroup.getChildren().remove(bullet);
+    }
+
+    public static Group getTowerGroup() {
+        return TowerGroup;
+    }
+
+    public static Group getBulletGroup() {
+        return BulletGroup;
+    }
+
+    public static ArrayList<Tower> getTowerList(){
+        return TowerList;
+    }
+
+    public static ArrayList<Bullet> getBulletList(){
+        return BulletList;
+    }
+
+    public static void finish(){
+        Stage stage = (Stage) BalloonGroup.getScene().getWindow(); // getting the actual stage
+        stage.close();
+        GameControler.StopPlay();
+        try {
+            GameControler.endOfTheGame();
+        }
+        catch (Throwable throwable){
+
+        }
+        //UpdateGameScene();
+
     }
 
     public void clear(){
@@ -563,14 +639,37 @@ public class View extends Application {
         TileGroup = new Group();
         TowerGroup = new Group();
         BalloonGroup = new Group();
+        BulletGroup = new Group();
+        BulletList.clear();
+        TowerList.clear();
         GameMap = new Pane();
-        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
+        GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup, BulletGroup);
         NumberOfBalloons = 0;
         ActualWave = 1;
         NumberOfMissed = 0;
         StartTile.clear();
         EndTile.clear();
 
+    }
+
+    public static void killBalloon(){
+        ++NumOfKilledBalloons;
+    }
+
+    public static boolean nextWave(){
+        if(ActualWave < Level.getNumberOfWaves()){
+            ++ActualWave;
+            NumOfKilledBalloons = 0;
+            Start_stop.setText("Play");
+            //BalloonGroup = new Group();
+            //UpdateGameScene();
+            return true;
+        }
+        else return false;
+    }
+
+    public static int getActualWave(){
+        return ActualWave;
     }
 
     @Override
