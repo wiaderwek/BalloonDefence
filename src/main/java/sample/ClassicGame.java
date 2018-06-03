@@ -63,7 +63,7 @@ public class ClassicGame extends Application {
                 close(Levels[finalI]);
 
                 GameControler gc = new GameControler();
-                gc.setMap(finalI+1, "player");
+                gc.setMap(finalI+1, "player", 1);
             });
         }
 

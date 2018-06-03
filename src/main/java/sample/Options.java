@@ -216,7 +216,7 @@ public class Options extends Application {
             BufferedReader BufferReader =  new BufferedReader(new FileReader(new File("target\\classes\\StandardModeLevel.txt"))); //loadin file with saved difficulty level
             int DifficultyLevel = Integer.parseInt(BufferReader.readLine());            //loading difficulty level
             PrevDifficulty = DifficultyLevel;
-
+            BufferReader.close();
         } catch (FileNotFoundException e) {
             PrevDifficulty = 1;
         } catch (IOException e) {

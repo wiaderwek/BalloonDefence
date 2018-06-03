@@ -18,15 +18,15 @@ public class GameControler {
     private static Player CurentPlayer;
     private static View view = new View();
     private static Map map = new Map();
-    private Stage PrimaryStage;
-    private static AnimationTimer Movetimer;
     private static ArrayList<Balloon> BalloonList = new ArrayList<Balloon>();
     private static ArrayList<Balloon> ActualBalloonList = new ArrayList<Balloon>();
     private static ArrayList<Tower> TowerList = new ArrayList<Tower>();
     private static boolean isStopped = false;
     private static LevelControler LevelControler;
+    private static int GameType;
 
-    public void setMap(int i, String name){
+    public void setMap(int i, String name, int GameType){
+        this.GameType = GameType;
         Level = new Level();
         LevelControler = new LevelControler();
         model = new Model();
@@ -35,20 +35,25 @@ public class GameControler {
         map = new Map();
         BalloonList = new ArrayList<Balloon>();
         ActualBalloonList = new ArrayList<Balloon>();
-        if(i == 1){
-            map.setMap(new File("target\\classes\\FirstLevelMap.txt"));
-            view.set(new File("target\\classes\\FirstLevelMap.txt"), name);
-            Level.loadLevel(1);
+        if(GameType==1) {
+            if (i == 1) {
+                map.setMap(new File("target\\classes\\FirstLevelMap.txt"));
+                view.set(new File("target\\classes\\FirstLevelMap.txt"), name);
+                Level.loadLevel(1);
+            } else if (i == 2) {
+                map.setMap(new File("target\\classes\\SecondLevelMap.txt"));
+                view.set(new File("target\\classes\\SecondLevelMap.txt"), name);
+                Level.loadLevel(2);
+            } else if (i == 3) {
+                map.setMap(new File("target\\classes\\ThirdLevelMap.txt"));
+                view.set(new File("target\\classes\\ThirdLevelMap.txt"), name);
+                Level.loadLevel(3);
+            }
         }
-        else if(i==2){
-            map.setMap(new File("target\\classes\\SecondLevelMap.txt"));
-            view.set(new File("target\\classes\\SecondLevelMap.txt"), name);
-            Level.loadLevel(1);
-        }
-        else if(i==3){
-            //map.setMap(new File("target\\classes\\ThirdLevelMap.txt"));
-            view.set(new File("target\\classes\\ThirdLevelMap.txt"), name);
-            Level.loadLevel(1);
+        else{
+            map.setMap(new File("target\\classes\\BalloonRushMap.txt"));
+            view.set(new File("target\\classes\\BalloonRushMap.txt"), name);
+            Level.loadLevel(0);
         }
 
         LevelControler.setView(view);
@@ -190,7 +195,6 @@ public class GameControler {
     }
 
     public static void win(){
-        //LevelControler.finish();
         saveLevel();
         view.Win();
     }
@@ -212,7 +216,8 @@ public class GameControler {
         if(AvailableLevel == Level.getLevelNumber()){
             try {
                 PrintWriter SaveLevelNumber = new PrintWriter(new FileWriter("target\\classes\\AvailableLevel.txt"));
-                SaveLevelNumber.format("%d", AvailableLevel + 1);
+                //SaveLevelNumber.format("%d", AvailableLevel + 1);
+                SaveLevelNumber.println(AvailableLevel+1);
                 SaveLevelNumber.close();
             }
             catch(FileNotFoundException e){
@@ -226,7 +231,12 @@ public class GameControler {
     }
 
     public static void lose(){
-        view.Lose();
+        if(Level.getGameType()==1) {
+            view.Lose();
+        }
+        else{
+            view.Summary();
+        }
     }
 
 

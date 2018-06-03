@@ -22,10 +22,8 @@ import javafx.stage.StageStyle;
 import sample.Controler.GameControler;
 import sample.Model.*;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 
 import static sample.Model.Tile.TileType.*;
 
@@ -155,6 +153,7 @@ public class View extends Application {
         GridPane root = new GridPane();
 
         int NumberOfBalloonsForWave = Level.getNumberOfBalloonsForWave(ActualWave);
+        int ScoreVal = Player.getScore();
         NumberOfWaves = Level.getNumberOfWaves();
 
         //initializing labels with informations about player and game
@@ -163,6 +162,7 @@ public class View extends Application {
         Label Wave = new Label(" Wave: " +ActualWave + " of " + NumberOfWaves);
         Label Missed = new Label("Missed: " + NumberOfMissed + " of " + MaxMissed);
         Label Killed = new Label("Killed Balloons: " + NumOfKilledBalloons + " / " + NumberOfBalloonsForWave );
+        Label Score = new Label("Score: " + ScoreVal);
         Start_stop = new Button("Stop");
         Button Finish = new Button("End");
 
@@ -188,13 +188,17 @@ public class View extends Application {
         Killed.setStyle("-fx-background-color: transparent");
         Killed.setTextFill(Color.CORAL);
 
+        Score.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
+        Score.setStyle("-fx-background-color: transparent");
+        Score.setTextFill(Color.LIMEGREEN);
+
         Start_stop.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
         Start_stop.setStyle("-fx-background-color: transparent");
-        Start_stop.setTextFill(Color.LIMEGREEN);
+        Start_stop.setTextFill(Color.ROYALBLUE);
 
         Finish.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
         Finish.setStyle("-fx-background-color: transparent");
-        Finish.setTextFill(Color.ROYALBLUE);
+        Finish.setTextFill(Color.CORAL);
 
         Finish.setOnAction(event -> {
             Stage stage = (Stage) Finish.getScene().getWindow(); // getting the actual stage
@@ -222,11 +226,12 @@ public class View extends Application {
 
         root.add(PlayerNick, 1,1);
         root.add(Gold,1,2,2,1);
-        root.add(Wave,1,3,2,1);
+        root.add(Wave,1,3,5,1);
         root.add(Missed,1,4, 3,1);
-        root.add(Killed,1,5,3,1);
-        root.add(Start_stop,1,6,1,1);
-        root.add(Finish,1,8,1,1);
+        root.add(Killed,1,5,5,1);
+        root.add(Score, 1, 6,3,1);
+        root.add(Start_stop,1,8,1,1);
+        root.add(Finish,1,9,1,1);
 
         return root;
     }
@@ -351,6 +356,17 @@ public class View extends Application {
         rowShoping = row;
         colShoping = column;
 
+        Button close =  new Button("Close");
+
+        close.setOnAction(event -> {
+            Shopping=false;
+            closeWindow(close);
+        });
+
+        close.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 20));
+        close.setStyle("-fx-background-color: transparent");
+        close.setTextFill(Color.ROYALBLUE);
+
         if(Shopstage!=null) {
             Shopstage.close();
         }
@@ -454,10 +470,10 @@ public class View extends Application {
         Group TowerSelectGroup = new Group();
         TowerSelectGroup.getChildren().addAll(FirstTypeTower, SecondTypeTower, ThirdTypeTower);
 
-        root.getChildren().addAll(TowerSelectGroup, FirstTypeTowerProperties, SecondTypeTowerProperties, ThirdTypeTowerProperties);
+        root.getChildren().addAll(TowerSelectGroup, FirstTypeTowerProperties, SecondTypeTowerProperties, ThirdTypeTowerProperties, close);
         root.setTopAnchor(TowerSelectGroup, 10.0);
         root.setLeftAnchor(TowerSelectGroup, 10.0);
-        root.setBottomAnchor(TowerSelectGroup, 10.0);
+        root.setBottomAnchor(TowerSelectGroup, 50.0);
 
 
         root.setTopAnchor(FirstTypeTowerProperties, 10.0);
@@ -471,6 +487,12 @@ public class View extends Application {
         root.setTopAnchor(ThirdTypeTowerProperties, 266.0);
         root.setLeftAnchor(ThirdTypeTowerProperties, 100.0);
         root.setRightAnchor(ThirdTypeTowerProperties, 10.0);
+
+        //root.setTopAnchor(close, 10.0);
+        root.setLeftAnchor(close, 10.0);
+        root.setBottomAnchor(close, 5.0);
+
+
 
         showShop(root);
 
@@ -741,6 +763,121 @@ public class View extends Application {
             return true;
         }
         return false;
+    }
+
+    public void Summary(){
+        showSummaryWindow();
+        SaveScore(Player.getNick(), Player.getScore());
+    }
+
+    public void showSummaryWindow(){
+        finish();
+        clear();
+
+        Integer score = Player.getScore();
+        GridPane root = new GridPane();
+
+        Label Nick = new Label(Player.getNick());
+        Label Score = new Label(score.toString());
+
+        Nick.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 40));
+        Nick.setStyle("-fx-background-color: transparent");
+        Nick.setTextFill(Color.ROYALBLUE);
+
+        Score.fontProperty().set(Font.font("Times New Roman", FontWeight.BOLD, 40));
+        Score.setStyle("-fx-background-color: transparent");
+        Score.setTextFill(Color.LIMEGREEN);
+
+        Background back;
+        try {                                               //try to load background image
+            Image img = new Image(getClass().getClassLoader().getResource("OptionsBackground.png").toString());     //creating image with OptionsBackground.png
+            BackgroundImage bcg = new BackgroundImage(img, null, null, null, null);
+            back = new Background(bcg);
+        }
+        catch (NullPointerException exception){             //if loafing background image failed then set white background
+            back = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(2), new Insets(2))); //creating white plain background
+        }
+
+
+        root.setBackground(back);
+
+        root.setHgap(1);                                                  //setting in width of the horizontal gaps between columns in GridPane
+        root.setVgap(1);                                                  //setting in height of the vertical gaps between rows in GridPane
+        root.setPadding(new Insets(15, 25, 15, 25));  //setting margins around the whole grid
+
+        root.add(Nick, 2,2,2,1);
+        root.add(Score,7,2,2,1);
+
+        ActualScene = new Scene(root, 558,300);
+        ActualScene.setOnMouseClicked((MouseEvent event) ->{
+            PrimaryStage.close();
+        });
+        PrimaryStage.setScene(ActualScene);
+
+        PrimaryStage.show();
+
+    }
+
+    private void SaveScore(String nick, int Score){
+        String []HighScoresTable = new String[3];
+        String PlayerScore = nick + " " + Score;
+
+
+        try {
+
+            BufferedReader BufferReader =  new BufferedReader(new FileReader(new File("target\\classes\\Highscores.txt"))); //loadin file with highscores
+            HighScoresTable[0] = BufferReader.readLine();            //loading first place (name + score)
+            HighScoresTable[1] = BufferReader.readLine();           //loading second place (name + score)
+            HighScoresTable[2] = BufferReader.readLine();            //loading third place (name + score)
+
+            String []FirstPlace = HighScoresTable[0].split(" ");
+            String []SecondPlace = HighScoresTable[1].split(" ");
+            String []ThirdPlace = HighScoresTable[2].split(" ");
+            System.out.println(Score + " " + Integer.parseInt(ThirdPlace[ThirdPlace.length-1]) );
+
+            if(Score > Integer.parseInt(ThirdPlace[ThirdPlace.length-1])){
+                if(Score > Integer.parseInt(SecondPlace[SecondPlace.length-1])){
+                    if(Score > Integer.parseInt(FirstPlace[FirstPlace.length-1])){
+                        HighScoresTable[2] = HighScoresTable[1];
+                        HighScoresTable[1] = HighScoresTable[0];
+                        HighScoresTable[0] = PlayerScore;
+                    }
+                    else {
+                        HighScoresTable[2] = HighScoresTable[1];
+                        HighScoresTable[1] = PlayerScore;
+                    }
+                }
+                else{
+                    HighScoresTable[2] = PlayerScore;
+                }
+            }
+
+            BufferReader.close();
+            //if loading file causes problems
+        } catch (FileNotFoundException e) {
+            HighScoresTable[0] = PlayerScore;
+            HighScoresTable[2] = HighScoresTable[1] = "<empty> 0";
+
+        } catch(IOException e){
+            HighScoresTable[0] = PlayerScore;
+            HighScoresTable[2] = HighScoresTable[1] = "<empty> 0";
+        }
+
+        try{
+            PrintWriter SaveHighscores = new PrintWriter(new FileWriter("target\\classes\\Highscores.txt"));
+            SaveHighscores.println(HighScoresTable[0]);
+            SaveHighscores.println(HighScoresTable[1]);
+            SaveHighscores.println(HighScoresTable[2]);
+
+            SaveHighscores.close();
+        }
+        catch(FileNotFoundException e){
+            System.out.println("coś nie tak");
+        }
+        catch (IOException e){
+            System.out.println("Coś nie tego");
+        }
+
     }
 
     @Override

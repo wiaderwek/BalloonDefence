@@ -54,8 +54,11 @@ public class ClassicOrBalloonRush extends Application {
         });
 
         BalloonRush.setOnAction(event -> {
+            BalloonRushGame brg = new BalloonRushGame();
+            brg.ShowNickWindow();
 
-
+            Stage stage = (Stage) BalloonRush.getScene().getWindow(); // getting the actual stage
+            stage.close();
         });
 
 
