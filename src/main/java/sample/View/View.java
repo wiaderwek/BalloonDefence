@@ -24,6 +24,8 @@ import sample.Model.*;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 import static sample.Model.Tile.TileType.*;
 
@@ -47,6 +49,7 @@ public class View extends Application {
 
     private static ArrayList<Tower> TowerList = new ArrayList<Tower>();
     private static ArrayList<Bullet> BulletList = new ArrayList<Bullet>();
+    //private static CopyOnWriteArrayList<Bullet> BulletList = new CopyOnWriteArrayList<Bullet>();
 
     private static int NumOfKilledBalloons = 0;
 
@@ -203,6 +206,7 @@ public class View extends Application {
             catch (Throwable throwable){
 
             }
+            clear();
             UpdateGameScene();
 
         });
@@ -615,9 +619,11 @@ public class View extends Application {
         return TowerList;
     }
 
+
     public static ArrayList<Bullet> getBulletList(){
         return BulletList;
     }
+
 
     public static void finish(){
         Stage stage = (Stage) BalloonGroup.getScene().getWindow(); // getting the actual stage
@@ -645,6 +651,7 @@ public class View extends Application {
         GameMap = new Pane();
         GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup, BulletGroup);
         NumberOfBalloons = 0;
+        NumOfKilledBalloons = 0;
         ActualWave = 1;
         NumberOfMissed = 0;
         StartTile.clear();
@@ -670,6 +677,70 @@ public class View extends Application {
 
     public static int getActualWave(){
         return ActualWave;
+    }
+
+    public void Win(){
+        finish();
+        clear();
+
+        GridPane root =  new GridPane();
+
+        Background back;
+        try {                                               //try to load background image
+            Image img = new Image(getClass().getClassLoader().getResource("Win.png").toString());     //creating image with OptionsBackground.png
+            BackgroundImage bcg = new BackgroundImage(img, null, null, null, null);
+            back = new Background(bcg);
+        }
+        catch (NullPointerException exception){             //if loafing background image failed then set white background
+            back = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(2), new Insets(2))); //creating white plain background
+        }
+
+
+        root.setBackground(back);
+
+        ActualScene = new Scene(root, 558,300);
+        ActualScene.setOnMouseClicked((MouseEvent event) ->{
+            PrimaryStage.close();
+        });
+        PrimaryStage.setScene(ActualScene);
+
+        PrimaryStage.show();
+
+    }
+
+    public void Lose(){
+        finish();
+        clear();
+
+        GridPane root =  new GridPane();
+
+        Background back;
+        try {                                               //try to load background image
+            Image img = new Image(getClass().getClassLoader().getResource("Lose.png").toString());     //creating image with OptionsBackground.png
+            BackgroundImage bcg = new BackgroundImage(img, null, null, null, null);
+            back = new Background(bcg);
+        }
+        catch (NullPointerException exception){             //if loafing background image failed then set white background
+            back = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(2), new Insets(2))); //creating white plain background
+        }
+
+
+        root.setBackground(back);
+
+        ActualScene = new Scene(root, 558,300);
+        ActualScene.setOnMouseClicked((MouseEvent event) ->{
+            PrimaryStage.close();
+        });
+        PrimaryStage.setScene(ActualScene);
+
+        PrimaryStage.show();
+    }
+
+    public static boolean WasItLast(){
+        if(NumberOfMissed > MaxMissed){
+            return true;
+        }
+        return false;
     }
 
     @Override

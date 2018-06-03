@@ -9,6 +9,8 @@ import sample.View.View;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
+import java.util.concurrent.CopyOnWriteArrayList;
 
 public class LevelControler {
     private static sample.Model.Level Level;
@@ -41,7 +43,7 @@ public class LevelControler {
             int i =0;
             @Override
             public void handle(long now) {
-                if((now-Lasttime)/2 > 1000000000){
+                if((now-Lasttime) > 1000000000){
                     if(i<balloons.size()) {
                         Balloon balloon = balloons.get(i);
                         i++;
@@ -71,8 +73,16 @@ public class LevelControler {
                                     balloon.move();
                                 } else {
                                     //iterator.remove();
-                                    view.moveBalloonToStart(balloon);
                                     view.missed();
+                                    if(View.WasItLast()){
+                                        iterator.remove();
+                                        stop();
+                                        GameControler.lose();
+                                        return;
+                                    }
+                                    else {
+                                        view.moveBalloonToStart(balloon);
+                                    }
                                 }
                             }
                         }
@@ -80,12 +90,19 @@ public class LevelControler {
                     LasttimeMove = now;
                 }
                 else{
-                    NumOfKilledBalloons = 0;
-                    View.nextWave();
-                    ActualWave+=1;
-                    GameControler.stopTimers();
-                    spawn();
+                    if(ActualWave+1 >= Level.getNumberOfWaves() && NumOfKilledBalloons>=Level.getNumberOfBalloonsForWave(ActualWave+1)){
+                        GameControler.win();
+                    }
+                    else {
+                        NumOfKilledBalloons = 0;
+                        View.nextWave();
+                        ActualWave += 1;
+                        GameControler.stopTimers();
+                        spawn();
+                    }
+
                 }
+
             }
         };
     }
@@ -130,40 +147,44 @@ public class LevelControler {
         };
     }
 
-    public void moveBullets(){
+    public synchronized void moveBullets(){
         Bullettimer = new AnimationTimer() {
             long Lastmove = 0;
             @Override
             public void handle(long now) {
-                if(now - Lastmove > 99999){
-                    for(Iterator<Bullet> BulletIterator = view.getBulletList().iterator(); BulletIterator.hasNext();){
-                        Bullet ActualBullet = BulletIterator.next();
-                        if(ActualBullet.getTarget()!=null) {
-                            if (ActualBullet.reachTarget()) {
-                                ActualBullet.getTarget().getDamage(ActualBullet.getDamage());
-                                BulletIterator.remove();
-                                view.RemoveBullet(ActualBullet);
-                                if (!ActualBullet.getTarget().alive()) {
-                                    View.killBalloon();
-                                    GameControler.addGold(ActualBullet.getTarget());
-                                    ActualBalloonList.remove(ActualBullet.getTarget());
-                                    view.removeBalloon(ActualBullet.getTarget());
-                                    ++NumOfKilledBalloons;
+                if(now - Lastmove > 10000000){
+                    try {
+                        for (Iterator<Bullet> BulletIterator = view.getBulletList().iterator(); BulletIterator.hasNext(); ) {
+                            Bullet ActualBullet = BulletIterator.next();
+                            if (ActualBullet.getTarget() != null) {
+                                if (ActualBullet.reachTarget()) {
+                                    BulletIterator.remove();
+                                    ActualBullet.getTarget().getDamage(ActualBullet.getDamage());
+                                    view.RemoveBullet(ActualBullet);
+                                    if (!ActualBullet.getTarget().alive()) {
+                                        View.killBalloon();
+                                        GameControler.addGold(ActualBullet.getTarget());
+                                        ActualBalloonList.remove(ActualBullet.getTarget());
+                                        view.removeBalloon(ActualBullet.getTarget());
+                                        ++NumOfKilledBalloons;
+                                    }
+                                } else {
+                                    if (!ActualBullet.getTarget().alive()) {
+                                        BulletIterator.remove();
+                                        view.RemoveBullet(ActualBullet);
+                                    } else {
+                                        ActualBullet.move();
+                                    }
                                 }
                             } else {
-                                if (!ActualBullet.getTarget().alive()) {
-                                    BulletIterator.remove();
-                                    view.RemoveBullet(ActualBullet);
-                                } else {
-                                    ActualBullet.move();
-                                }
+                                BulletIterator.remove();
+                                view.RemoveBullet(ActualBullet);
+
                             }
                         }
-                        else {
-                            BulletIterator.remove();
-                            view.RemoveBullet(ActualBullet);
-
-                        }
+                    }
+                    catch(Throwable ex){
+                        //System.out.println("Problem");
                     }
                     Lastmove = now;
                 }
@@ -219,6 +240,7 @@ public class LevelControler {
     public void finish(){
         stop();
         NumOfKilledBalloons = 0;
+        ActualWave = 0;
         BalloonList.clear();
         ActualBalloonList.clear();
         view.clear();

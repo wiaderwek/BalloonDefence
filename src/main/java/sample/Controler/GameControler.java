@@ -8,7 +8,7 @@ import javafx.stage.Stage;
 import sample.Model.*;
 import sample.View.View;
 
-import java.io.File;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 // refactoring guru
@@ -187,6 +187,46 @@ public class GameControler {
         }
 
         return isStopped;
+    }
+
+    public static void win(){
+        //LevelControler.finish();
+        saveLevel();
+        view.Win();
+    }
+
+    private static void saveLevel(){
+        int AvailableLevel;
+        try {
+            BufferedReader BufferReader = new BufferedReader(new FileReader(new File("target\\classes\\AvailableLevel.txt")));
+            int Available = Integer.parseInt(BufferReader.readLine());
+            AvailableLevel = Available;
+            BufferReader.close();
+        }
+        catch(FileNotFoundException e){
+            AvailableLevel = 1;
+        }
+        catch(IOException e){
+            AvailableLevel = 1;
+        }
+        if(AvailableLevel == Level.getLevelNumber()){
+            try {
+                PrintWriter SaveLevelNumber = new PrintWriter(new FileWriter("target\\classes\\AvailableLevel.txt"));
+                SaveLevelNumber.format("%d", AvailableLevel + 1);
+                SaveLevelNumber.close();
+            }
+            catch(FileNotFoundException e){
+                System.out.println("coś nie tak");
+            }
+            catch (IOException e){
+                System.out.println("Coś nie tego");
+            }
+        }
+
+    }
+
+    public static void lose(){
+        view.Lose();
     }
 
 

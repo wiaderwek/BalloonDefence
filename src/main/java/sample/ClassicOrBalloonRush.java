@@ -40,11 +40,15 @@ public class ClassicOrBalloonRush extends Application {
 
         Classic.setOnAction(event -> {
 
+            ClassicGame cg = new ClassicGame();
+            cg.ShowChoiceWindow();
+
             Stage stage = (Stage) Classic.getScene().getWindow(); // getting the actual stage
             stage.close();                                        //closing window
-
+            /*
             GameControler gc = new GameControler();
             gc.setMap(1, "tomsinho");
+            */
 
 
         });
