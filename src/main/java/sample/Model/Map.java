@@ -31,7 +31,7 @@ public class Map extends StackPane{
     private static final char Cloud = 'c';
 
 
-
+    //loading map from the file
     public static void setMap(File Mapdescriptor){
         try {
             BufferedReader BufferReader =  new BufferedReader(new FileReader(Mapdescriptor));                 //loadin file with amp descriptor

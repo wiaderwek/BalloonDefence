@@ -6,11 +6,11 @@ import java.io.*;
 import java.util.ArrayList;
 
 public class Level {
-    private static int BalloonsForEachWave[][];
+    private static int BalloonsForEachWave[][];                         //table with number of each balloon for each wave
     private static ArrayList<int[]> BalloonsForEachWaveInBalloonRush;
-    private static int LevelNumber = 1;
-    private static int DifficultyLevel;
-    private static int GameType;
+    private static int LevelNumber = 1;                                 //actula level number
+    private static int DifficultyLevel;                                 //actual difficulty
+    private static int GameType;                                        //choosen game mode
 
     public void loadLevel(int level){
         LevelNumber = level;
@@ -21,11 +21,18 @@ public class Level {
         else if(level==1){
             loadLevlProperties(new File("target\\classes\\FirstLevel.txt"));
         }
+        else if(level==2){
+            loadLevlProperties(new File("target\\classes\\FirstLevel.txt"));
+        }
+        else if(level==3){
+            loadLevlProperties(new File("target\\classes\\FirstLevel.txt"));
+        }
 
         LoadDifficultyLevel();
 
     }
 
+    //loading number of waves and number of each balloon for each wave
     void loadLevlProperties(File LevelDescriptor){
         try{
             BufferedReader BufferReader =  new BufferedReader(new FileReader(LevelDescriptor));                 //loadin file with level descriptor
@@ -45,6 +52,7 @@ public class Level {
         }
     }
 
+    //loading the properties to generate balloons for waves in BalloonRuch mode
     void LoadBalloonRushProperties(){
         try{
             BufferedReader BufferReader = new BufferedReader(new FileReader(new File("target\\classes\\BalloonRushProperties.txt")));
@@ -90,6 +98,7 @@ public class Level {
         int NumberOfBalloons = (getNumberOfFirstTypeBalloon(wave) + getNumberOfSecondTypeBalloon(wave) + getNumberOfThirdTypeBalloon(wave));
         return NumberOfBalloons;
     }
+
     public static int getNumberOfWaves(){
         if(GameType==1) {
             return BalloonsForEachWave.length;
@@ -108,6 +117,7 @@ public class Level {
         return BalloonsForWave;
     }
 
+    //creating list with all the balloon to spawn for each wave in Classic mode
     public static void getBalloonListForWaveInClassicGame(ArrayList<Balloon> BalloonsForWave, int wave){
         for(int i=0; i<Level.getNumberOfFirstTypeBalloon(wave)*(DifficultyLevel+1);++i){
             Balloon balloon = new Balloon(Balloon.BalloonType.RED, View.getStartTile().get(i%View.getStartTile().size()), View.getTileMap());
@@ -125,6 +135,7 @@ public class Level {
         }
     }
 
+    //creating list with all the balloon to spawn for each wave in BalloonRush mode
     public static void getBalloonListForWaveInBalloonRush(ArrayList<Balloon> BalloonsForWave, int wave){
         for(int i=0; i<Level.getNumberOfFirstTypeBalloon(wave);++i){
             Balloon balloon = new Balloon(Balloon.BalloonType.RED, View.getStartTile().get(i%View.getStartTile().size()), View.getTileMap());
@@ -147,6 +158,7 @@ public class Level {
         return LevelNumber;
     }
 
+    //loading difficulty level from the file
     private void LoadDifficultyLevel(){
         try {
             BufferedReader BufferReader =  new BufferedReader(new FileReader(new File("target\\classes\\StandardModeLevel.txt"))); //loadin file with saved difficulty level

@@ -28,7 +28,7 @@ public class Main extends Application {
         primaryStage.show();                                                      //showing the stage
 
         //SoundtrackPlayer = new SoundtrackPlayer();                                //creating new object of the SoundtrackPlayer to play the music
-        SoundtrackPlayer.OnOffVolume(false);                                       //turning on the music
+        SoundtrackPlayer.OnOffVolume(true);                                       //turning on the music
     }
 
     private Parent CreateMainWindow(){   //creating GridPane with main buttons

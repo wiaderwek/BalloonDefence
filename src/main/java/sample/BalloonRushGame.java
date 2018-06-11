@@ -16,7 +16,6 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import sample.Controler.GameControler;
 
-import java.awt.event.MouseEvent;
 
 public class BalloonRushGame extends Application{
     private GridPane root = new GridPane();
@@ -50,6 +49,7 @@ public class BalloonRushGame extends Application{
             back = new Background(new BackgroundFill(Color.WHITE, new CornerRadii(2), new Insets(2))); //creating white plain background
         }
 
+        //if there is no name in text field you can't start the game
         Play.setOnAction(event->{
             if(Nick.getText() != null && !Nick.getText().isEmpty()){
                 close(Nick);
@@ -67,6 +67,7 @@ public class BalloonRushGame extends Application{
         return root;
     }
 
+    //function to showing windwos
     private void show(Parent root){
         Scene scene = new Scene(root);
         Stage stage = new Stage();
@@ -75,11 +76,13 @@ public class BalloonRushGame extends Application{
         stage.show();
     }
 
+    //function to closeing window on which node is placed
     private void close(Node node){
         Stage stage = (Stage) node.getScene().getWindow();
         stage.close();
     }
 
+    //function to show window with logging panel
     public void ShowNickWindow(){
         show(createNickWindow());
     }

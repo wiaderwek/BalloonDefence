@@ -62,8 +62,9 @@ public class View extends Application {
     private static boolean Shopping = false;
     private int rowShoping;
     private int colShoping;
-    private static Scene Shopscene;
-    private static Stage Shopstage;
+
+    private static Scene Shopscene;                         //scene for the shop window
+    private static Stage Shopstage;                         //stage for the shop window
 
 
     private static  Tile[][] TileMap;
@@ -93,10 +94,10 @@ public class View extends Application {
         model = new Model();
         model.loadMap(MapDescriptor);
         model.setPlayer(Name);
-        //GameMap.getChildren().addAll(TileGroup, TowerGroup, BalloonGroup);
         DrawMap(map);
     }
 
+    //loadinf textures for the map
     public void DrawMap(Map map){
         String tileName = null;
         TileMap = new Tile[map.getMapSize()][map.getMapSize()];
@@ -106,11 +107,11 @@ public class View extends Application {
                 switch (tile.getTypeOfTile()) {
                     case START:
                         tileName = "sky.jpg";
-                        StartTile.add(tile);
+                        StartTile.add(tile);                        //saveing all the end tiles
                         break;
                     case END:
                         tileName = "sky.jpg";
-                        EndTile.add(tile);
+                        EndTile.add(tile);                          //saveing all the start tile
                         break;
                     case SKY:
                         tileName = "sky.jpg";
@@ -119,16 +120,17 @@ public class View extends Application {
                         tileName = "cloud.jpg";
                         break;
                 }
-                TileMap[i][j] = tile;
+                TileMap[i][j] = tile;                               //creating tile
                 Image ImageToTile = new Image(getClass().getClassLoader().getResource(tileName).toString());
                 if (ImageToTile != null) {
                     tile.setFill(new ImagePattern(ImageToTile));
                 }
-                TileGroup.getChildren().add(tile);
+                TileGroup.getChildren().add(tile);                  //adding tile to the tile group
             }
         }
     }
 
+    //creating balloon with right color
     public void DrawBalloon(Balloon balloon){
         if(balloon.getBalloonType() == Balloon.BalloonType.GREEN){
             balloon.setFill(Color.LIMEGREEN);
@@ -200,6 +202,7 @@ public class View extends Application {
         Finish.setStyle("-fx-background-color: transparent");
         Finish.setTextFill(Color.CORAL);
 
+        //finishing the game without saveing results
         Finish.setOnAction(event -> {
             Stage stage = (Stage) Finish.getScene().getWindow(); // getting the actual stage
             stage.close();
@@ -215,6 +218,7 @@ public class View extends Application {
 
         });
 
+        //stoping and starting the game
         Start_stop.setOnAction( event -> {
             if(GameControler.stop_start()){
                 Start_stop.setText("Play");
@@ -237,19 +241,6 @@ public class View extends Application {
     }
 
 
-
-    /*
-    tile.setOnMouseClicked(new EventHandler<MouseEvent>()
-                {
-                    @Override
-                    public void handle(MouseEvent t) {
-                        if(TileMap[finalI][finalJ].getTypeOfTile()== Tile.TileType.CLOUD && t.getButton()== MouseButton.SECONDARY) {
-                            WhichTower(finalI,finalJ);
-                        }
-
-                    }
-                });
-     */
 
 
     private Parent CreateGameScene(){
@@ -294,7 +285,7 @@ public class View extends Application {
         show(GameScene);
     }
 
-
+    //buying the chosen tower if player has enough gold
     private void buyTower(Tower.TowerType type, int row, int column){
             Tower tower = new Tower(type, column, row);
             setFilling(tower);
@@ -305,20 +296,6 @@ public class View extends Application {
                 Player.Buy(tower.getCost());
                 UpdateGameScene();
             }
-
-
-
-        /*
-        tower.setOnMouseClicked(new EventHandler<MouseEvent>() {
-            @Override
-            public void handle(MouseEvent event) {
-                if(event.getButton() == MouseButton.SECONDARY) {
-                    TowerGroup.getChildren().remove(tower);
-                }
-            }
-
-        });
-        */
 
     }
 
@@ -351,6 +328,7 @@ public class View extends Application {
         }
     }
 
+    //shop panel
     public void WhichTower(int row, int column){
         Shopping = true;
         rowShoping = row;
@@ -430,6 +408,8 @@ public class View extends Application {
         FirstTypeTowerProperties.getChildren().addAll(FirstTypeTowerCDS);
         SecondTypeTowerProperties.getChildren().addAll(SecondTypeTowerCDS);
         ThirdTypeTowerProperties.getChildren().addAll(ThirdTypeTowerCDS);
+
+        //try to buy the choosen type of the tower
 
         FirstTypeTower.setOnMouseClicked(new EventHandler<MouseEvent>(){
             @Override
@@ -818,6 +798,7 @@ public class View extends Application {
 
     }
 
+    //save score if it's better then the others
     private void SaveScore(String nick, int Score){
         String []HighScoresTable = new String[3];
         String PlayerScore = nick + " " + Score;

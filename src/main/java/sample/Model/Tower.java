@@ -85,6 +85,7 @@ public class Tower extends Rectangle{
         return speed;
     }
 
+    //if our balloon is dead find another
     public void setTarget(ArrayList<Balloon> TargetList){
         if(target!=null){
             if(target.isAlive()){
@@ -99,6 +100,7 @@ public class Tower extends Rectangle{
         }
     }
 
+    //finding nearest balloon
     public void FindNearestTarget(ArrayList<Balloon> TargetList){
         double distance = 9999;
 
